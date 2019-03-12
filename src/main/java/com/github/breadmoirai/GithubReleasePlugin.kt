@@ -18,16 +18,16 @@ package com.github.breadmoirai
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 import java.util.concurrent.Callable
 
 class GithubReleasePlugin : Plugin<Project> {
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(GithubReleasePlugin::class.java)
+        private val log: Logger = Logging.getLogger(GithubReleasePlugin::class.java)
         var infoEnabled = false
     }
 

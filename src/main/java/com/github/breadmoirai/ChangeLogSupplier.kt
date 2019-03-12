@@ -20,10 +20,10 @@ import groovy.json.JsonSlurper
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.concurrent.Callable
@@ -32,7 +32,7 @@ import java.util.concurrent.Callable
 class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: Project) : Callable<String> {
 
     companion object {
-        private val log : Logger= LoggerFactory.getLogger(ChangeLogSupplier::class.java)
+        private val log : Logger = Logging.getLogger(ChangeLogSupplier::class.java)
     }
 
     private val  owner: Provider<CharSequence> = extension.getOwnerProvider()

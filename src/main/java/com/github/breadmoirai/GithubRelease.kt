@@ -26,9 +26,9 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import org.gradle.api.file.FileCollection
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Provider
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 class GithubRelease(
         private val owner: CharSequence,
@@ -46,7 +46,7 @@ class GithubRelease(
 ) : Runnable {
 
     companion object {
-        private val logger: Logger = LoggerFactory.getLogger(GithubRelease::class.java)
+        private val logger: Logger = Logging.getLogger(GithubRelease::class.java)
         val JSON: MediaType = MediaType.parse("application/json; charset=utf-8")!!
 
         internal fun  createRequestWithHeaders( authorization: CharSequence) : Request.Builder{

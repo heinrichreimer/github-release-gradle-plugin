@@ -1,5 +1,5 @@
 /*
- *    Copyright 2017 - 2018 BreadMoirai (Ton Ly)
+ *    Copyright 2017 - 2018 BreadMoirai (Ton Ly), 2018 Jan Heinrich Reimer
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,151 +16,129 @@
 
 package com.github.breadmoirai
 
+import com.github.breadmoirai.util.*
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.provider.Property
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
-import java.util.concurrent.Callable
 
+@Suppress("UnstableApiUsage")
 class GithubReleaseTask : DefaultTask() {
+
+    @get:Input
+    internal val ownerProperty: Property<CharSequence> = project.objects.property()
+    @get:Internal
+    var ownerProvider by ownerProperty.providerDelegate
+    @get:Internal
+    var owner by ownerProperty.valueDelegate
+
+    @get:Input
+    internal val repoProperty: Property<CharSequence> = project.objects.property()
+    @get:Internal
+    var repoProvider by repoProperty.providerDelegate
+    @get:Internal
+    var repo by repoProperty.valueDelegate
+
+    @get:Input
+    internal val authorizationProperty: Property<CharSequence> = project.objects.property()
+    @get:Internal
+    var authorizationProvider by authorizationProperty.providerDelegate
+    @get:Internal
+    var authorization by authorizationProperty.valueDelegate
+    @get:Internal
+    var tokenProvider by authorizationProperty.providerDelegate
+    @get:Internal
+    var token by authorizationProperty.valueDelegate
+
+    @get:Input
+    internal val tagNameProperty: Property<CharSequence> = project.objects.property()
+    @get:Internal
+    var tagNameProvider by tagNameProperty.providerDelegate
+    @get:Internal
+    var tagName by tagNameProperty.valueDelegate
+
+    @get:Input
+    internal val targetCommitishProperty: Property<CharSequence> = project.objects.property()
+    @get:Internal
+    var targetCommitishProvider by targetCommitishProperty.providerDelegate
+    @get:Internal
+    var targetCommitish by targetCommitishProperty.valueDelegate
+
+    @get:Input
+    internal val releaseNameProperty: Property<CharSequence> = project.objects.property()
+    @get:Internal
+    var releaseNameProvider by releaseNameProperty.providerDelegate
+    @get:Internal
+    var releaseName by releaseNameProperty.valueDelegate
+
+    @get:Input
+    internal val bodyProperty: Property<CharSequence> = project.objects.property()
+    @get:Internal
+    var bodyProvider by bodyProperty.providerDelegate
+    @get:Internal
+    var body by bodyProperty.valueDelegate
+
+    @get:Input
+    internal val draftProperty: Property<Boolean> = project.objects.property()
+    @get:Internal
+    var draftProvider by draftProperty.providerDelegate
+    @get:Internal
+    var draft by draftProperty.valueDelegate
+
+    @get:Input
+    internal val prereleaseProperty: Property<Boolean> = project.objects.property()
+    @get:Internal
+    var prereleaseProvider by prereleaseProperty.providerDelegate
+    @get:Internal
+    var prerelease by prereleaseProperty.valueDelegate
+
+    @get:InputFiles
+    internal val releaseAssetsFileCollection: ConfigurableFileCollection = project.files()
+    @get:Internal
+    var releaseAssetsCollection by releaseAssetsFileCollection.collectionDelegate
+    @get:Internal
+    var releaseAssets by releaseAssetsFileCollection.filesDelegate
+    @get:Internal
+    var releaseAsset by releaseAssetsFileCollection.fileDelegate
+
+    fun releaseAssets(vararg assets: Any) = releaseAssetsFileCollection.setFrom(assets)
+
+    @get:Input
+    internal val overwriteProperty: Property<Boolean> = project.objects.property()
+    @get:Internal
+    var overwriteProvider by overwriteProperty.providerDelegate
+    @get:Internal
+    var overwrite by overwriteProperty.valueDelegate
+
+    @get:Input
+    internal val allowUploadToExistingProperty: Property<Boolean> = project.objects.property()
+    @get:Internal
+    var allowUploadToExistingProvider by allowUploadToExistingProperty.providerDelegate
+    @get:Internal
+    var allowUploadToExisting by allowUploadToExistingProperty.valueDelegate
 
     init {
         group = "publishing"
     }
 
-    @Input
-    val owner: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input
-    val repo: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input
-    val authorization: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input
-    val tagName: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input
-    val targetCommitish: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input
-    val releaseName: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input
-    val body: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input
-    val draft: Property<Boolean> = project.objects.property(Boolean::class.java)
-    @Input
-    val prerelease: Property<Boolean> = project.objects.property(Boolean::class.java)
-    @InputFiles
-    val releaseAssets: ConfigurableFileCollection = project.files()
-    @Input
-    val overwrite: Property<Boolean> = project.objects.property(Boolean::class.java)
-    @Input
-    val allowUploadToExisting: Property<Boolean> = project.objects.property(Boolean::class.java)
-
     @TaskAction
     fun publishRelease() {
-        val tag = tagName.get()
-        val tar = targetCommitish.get()
-        val rel = releaseName.get()
-        val bod = body.get()
-        val own = owner.get()
-        val rep = repo.get()
-        val dra = draft.get()
-        val pre = prerelease.get()
-        val auth = authorization.get()
-        val releaseAssets = releaseAssets
         GithubRelease(
-                own,
-                rep,
-                auth,
-                tag,
-                tar,
-                rel,
-                bod,
-                dra,
-                pre,
-                releaseAssets,
-                overwrite,
-                allowUploadToExisting
+                owner = ownerProvider,
+                repo = repoProperty,
+                authorization = authorizationProperty.map { "Token $it" },
+                tagName = tagNameProperty,
+                targetCommitish = targetCommitishProperty,
+                releaseName = releaseNameProperty,
+                body = bodyProperty,
+                draft = draftProperty,
+                prerelease = prereleaseProperty,
+                releaseAssets = releaseAssetsFileCollection,
+                overwrite = overwriteProperty,
+                allowUploadToExisting = allowUploadToExistingProperty
         ).run()
     }
-
-    fun setOwner(owner: CharSequence) = this.owner.set(owner)
-
-    fun setOwner(owner: Provider<CharSequence>) = this.owner.set(owner)
-
-    fun setOwner(owner: Callable<CharSequence>) = this.owner.set(project.provider(owner))
-
-    fun setRepo(repo: CharSequence) = this.repo.set(repo)
-
-    fun setRepo(repo: Provider<CharSequence>) = this.repo.set(repo)
-
-    fun setRepo(repo: Callable<CharSequence>) = this.repo.set(project.provider(repo))
-
-    fun setToken(token: CharSequence) = this.authorization.set("Token $token")
-
-    fun setToken(token: Provider<CharSequence>) = this.authorization.set(token.map { "Token $it" })
-
-    fun setToken(token: Callable<CharSequence>) = this.authorization.set(project.provider(token).map { "Token $it" })
-
-    fun setAuthorization(authorization: CharSequence) = this.authorization.set(authorization)
-
-    fun setAuthorization(authorization: Provider<CharSequence>) = this.authorization.set(authorization)
-
-    fun setAuthorization(authorization: Callable<CharSequence>) =
-            this.authorization.set(project.provider(authorization))
-
-    fun setTagName(tagName: CharSequence) = this.tagName.set(tagName)
-
-    fun setTagName(tagName: Provider<CharSequence>) = this.tagName.set(tagName)
-
-    fun setTagName(tagName: Callable<CharSequence>) = this.tagName.set(project.provider(tagName))
-
-    fun setTargetCommitish(targetCommitish: CharSequence) = this.targetCommitish.set(targetCommitish)
-
-    fun setTargetCommitish(targetCommitish: Provider<CharSequence>) = this.targetCommitish.set(targetCommitish)
-
-    fun setTargetCommitish(targetCommitish: Callable<CharSequence>) =
-            this.targetCommitish.set(project.provider(targetCommitish))
-
-    fun setReleaseName(releaseName: CharSequence) = this.releaseName.set(releaseName)
-
-    fun setReleaseName(releaseName: Provider<CharSequence>) = this.releaseName.set(releaseName)
-
-    fun setReleaseName(releaseName: Callable<CharSequence>) = this.releaseName.set(project.provider(releaseName))
-
-    fun setBody(body: CharSequence) = this.body.set(body)
-
-    fun setBody(body: Provider<CharSequence>) = this.body.set(body)
-
-    fun setBody(body: Callable<CharSequence>) = this.body.set(project.provider(body))
-
-    fun setDraft(draft: Boolean) = this.draft.set(draft)
-
-    fun setDraft(draft: Provider<Boolean>) = this.draft.set(draft)
-
-    fun setDraft(draft: Callable<Boolean>) = this.draft.set(project.provider(draft))
-
-    fun setPrerelease(prerelease: Boolean) = this.prerelease.set(prerelease)
-
-    fun setPrerelease(prerelease: Provider<Boolean>) = this.prerelease.set(prerelease)
-
-    fun setPrerelease(prerelease: Callable<Boolean>) = this.prerelease.set(project.provider(prerelease))
-
-    fun setReleaseAssets(vararg assets: Any) = this.releaseAssets.setFrom(assets)
-
-    fun setOverwrite(overwrite: Boolean) = this.overwrite.set(overwrite)
-
-    fun setOverwrite(overwrite: Provider<Boolean>) = this.overwrite.set(overwrite)
-
-    fun setOverwrite(overwrite: Callable<Boolean>) = this.overwrite.set(project.provider(overwrite))
-
-    fun setAllowUploadToExisting(allowUploadToExisting: Boolean) =
-            this.allowUploadToExisting.set(allowUploadToExisting)
-
-    fun setAllowUploadToExisting(allowUploadToExisting: Provider<Boolean>) =
-            this.allowUploadToExisting.set(allowUploadToExisting)
-
-    fun setAllowUploadToExisting(allowUploadToExisting: Callable<Boolean>) =
-            this.allowUploadToExisting.set(project.provider(allowUploadToExisting))
-
 }

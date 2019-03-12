@@ -21,7 +21,6 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
-
 import java.util.concurrent.Callable
 
 class GithubReleasePlugin : Plugin<Project> {
@@ -42,18 +41,18 @@ class GithubReleasePlugin : Plugin<Project> {
                 .create(EXTENSION_NAME, GithubReleaseExtension::class.java, project)
 
         project.tasks.create(TASK_NAME, GithubReleaseTask::class.java) {
-            it.setAuthorization(githubReleaseExtension.getAuthorizationProvider())
-            it.setOwner(githubReleaseExtension.getOwnerProvider())
-            it.setRepo(githubReleaseExtension.getRepoProvider())
-            it.setTagName(githubReleaseExtension.getTagNameProvider())
-            it.setTargetCommitish(githubReleaseExtension.getTargetCommitishProvider())
-            it.setReleaseName(githubReleaseExtension.getReleaseNameProvider())
-            it.setBody(githubReleaseExtension.getBodyProvider())
-            it.setDraft(githubReleaseExtension.getDraftProvider())
-            it.setPrerelease(githubReleaseExtension.getPrereleaseProvider())
-            it.setReleaseAssets(githubReleaseExtension.releaseAssets)
-            it.setOverwrite(githubReleaseExtension.getOverwriteProvider())
-            it.setAllowUploadToExisting(githubReleaseExtension.getAllowUploadToExistingProvider())
+            it.authorizationProvider = githubReleaseExtension.getAuthorizationProvider()
+            it.ownerProvider = githubReleaseExtension.getOwnerProvider()
+            it.repoProvider = githubReleaseExtension.getRepoProvider()
+            it.tagNameProvider = githubReleaseExtension.getTagNameProvider()
+            it.targetCommitishProvider = githubReleaseExtension.getTargetCommitishProvider()
+            it.releaseNameProvider = githubReleaseExtension.getReleaseNameProvider()
+            it.bodyProvider = githubReleaseExtension.getBodyProvider()
+            it.draftProvider = githubReleaseExtension.getDraftProvider()
+            it.prereleaseProvider = githubReleaseExtension.getPrereleaseProvider()
+            it.releaseAssetsCollection = githubReleaseExtension.releaseAssets
+            it.overwriteProvider = githubReleaseExtension.getOverwriteProvider()
+            it.allowUploadToExistingProvider = githubReleaseExtension.getAllowUploadToExistingProvider()
         }
 
         project.afterEvaluate {

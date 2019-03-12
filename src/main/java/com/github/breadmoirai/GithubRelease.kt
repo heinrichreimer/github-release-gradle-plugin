@@ -26,15 +26,15 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Provider
 
 class GithubRelease(
-        private val owner: CharSequence,
-        private val repo: CharSequence,
-        private val authorization: CharSequence,
-        private val tagName: CharSequence,
-        private val targetCommitish: CharSequence,
-        private val releaseName: CharSequence,
-        private val body: CharSequence,
-        private val draft: Boolean,
-        private val prerelease: Boolean,
+        private val owner: Provider<CharSequence>,
+        private val repo: Provider<CharSequence>,
+        private val authorization: Provider<CharSequence>,
+        private val tagName: Provider<CharSequence>,
+        private val targetCommitish: Provider<CharSequence>,
+        private val releaseName: Provider<CharSequence>,
+        private val body: Provider<CharSequence>,
+        private val draft: Provider<Boolean>,
+        private val prerelease: Provider<Boolean>,
         private val releaseAssets: FileCollection,
         private val overwrite: Provider<Boolean>,
         private val allowUploadToExisting: Provider<Boolean>
@@ -44,12 +44,12 @@ class GithubRelease(
         private val log: Logger = Logging.getLogger(GithubRelease::class.java)
         val JSON: MediaType = MediaType.parse("application/json; charset=utf-8")!!
 
-        internal fun createRequestWithHeaders(authorization: CharSequence): Request.Builder {
+        internal fun createRequestWithHeaders(authorization: Provider<CharSequence>): Request.Builder {
             return Request.Builder()
-                    .addHeader("Authorization", authorization.toString())
+                    .addHeader("Authorization", authorization.get().toString())
                     .addHeader("User-Agent", "breadmoirai github-release-gradle-plugin")
                     .addHeader("Accept", "application/vnd.github.v3+json")
-                    .addHeader("Content-Type", "application/json")
+                    .addHeader("Content-Type", JSON.toString())
         }
     }
 

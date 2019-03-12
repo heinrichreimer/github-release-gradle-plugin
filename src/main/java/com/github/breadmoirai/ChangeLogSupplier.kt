@@ -52,18 +52,16 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
     }
 
     /**
-     * Looks for the previous release's targetCommitish
-     * @return
+     * Looks for the previous release's target commit.
      */
     private fun getLastReleaseCommit(): CharSequence {
         val owner = this.owner.get()
         val repo = this.repo.get()
-        val auth = authorization.get()
         val tag = this.tag.get()
 
         // query the github api for releases
         val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases"
-        val response: Response = OkHttpClient().newCall(GithubRelease.createRequestWithHeaders(auth)
+        val response: Response = OkHttpClient().newCall(GithubRelease.createRequestWithHeaders(authorization)
                 .url(releaseUrl)
                 .get()
                 .build()
@@ -86,7 +84,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
             val lastTag = lastRelease["tag_name"]
             val tagUrl = "https://api.github.com/repos/$owner/$repo/git/refs/tags/$lastTag"
             val tagResponse: Response = OkHttpClient()
-                    .newCall(GithubRelease.createRequestWithHeaders(auth)
+                    .newCall(GithubRelease.createRequestWithHeaders(authorization)
                             .url(tagUrl)
                             .get()
                             .build()

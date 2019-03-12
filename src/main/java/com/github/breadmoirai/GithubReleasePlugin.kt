@@ -27,78 +27,78 @@ import java.util.concurrent.Callable
 class GithubReleasePlugin : Plugin<Project> {
 
     companion object {
+        private const val EXTENSION_NAME = "githubRelease"
+        private const val TASK_NAME = "githubRelease"
         private val log: Logger = Logging.getLogger(GithubReleasePlugin::class.java)
-        var infoEnabled = false
     }
 
     private lateinit var project: Project
 
     override fun apply(project: Project) {
         this.project = project
-        infoEnabled = project.logger.isInfoEnabled
 
-        log.debug("Creating Extension githubRelease")
-        val ext = project.extensions.create("githubRelease", GithubReleaseExtension::class.java, project)
+        val githubReleaseExtension = project
+                .extensions
+                .create(EXTENSION_NAME, GithubReleaseExtension::class.java, project)
 
-        project.tasks.create("githubRelease", GithubReleaseTask::class.java) {
-            log.debug("Creating Task githubRelease")
-            it.apply {
-                setAuthorization(ext.getAuthorizationProvider())
-                setOwner(ext.getOwnerProvider())
-                setRepo(ext.getRepoProvider())
-                setTagName(ext.getTagNameProvider())
-                setTargetCommitish(ext.getTargetCommitishProvider())
-                setReleaseName(ext.getReleaseNameProvider())
-                setBody(ext.getBodyProvider())
-                setDraft(ext.getDraftProvider())
-                setPrerelease(ext.getPrereleaseProvider())
-                setReleaseAssets(ext.releaseAssets)
-                setOverwrite(ext.getOverwriteProvider())
-                setAllowUploadToExisting(ext.getAllowUploadToExistingProvider())
-            }
+        project.tasks.create(TASK_NAME, GithubReleaseTask::class.java) {
+            it.setAuthorization(githubReleaseExtension.getAuthorizationProvider())
+            it.setOwner(githubReleaseExtension.getOwnerProvider())
+            it.setRepo(githubReleaseExtension.getRepoProvider())
+            it.setTagName(githubReleaseExtension.getTagNameProvider())
+            it.setTargetCommitish(githubReleaseExtension.getTargetCommitishProvider())
+            it.setReleaseName(githubReleaseExtension.getReleaseNameProvider())
+            it.setBody(githubReleaseExtension.getBodyProvider())
+            it.setDraft(githubReleaseExtension.getDraftProvider())
+            it.setPrerelease(githubReleaseExtension.getPrereleaseProvider())
+            it.setReleaseAssets(githubReleaseExtension.releaseAssets)
+            it.setOverwrite(githubReleaseExtension.getOverwriteProvider())
+            it.setAllowUploadToExisting(githubReleaseExtension.getAllowUploadToExistingProvider())
         }
 
         project.afterEvaluate {
             val self = project.plugins.findPlugin(GithubReleasePlugin::class.java)
 
             if (self != null) {
-                log.debug("Assigning default values for GithubReleasePlugin")
-                val e: GithubReleaseExtension = project.extensions.getByType(GithubReleaseExtension::class.java)
-                setOrElse("owner", e.owner, CharSequence::class.java, Callable<CharSequence> {
+                log.debug("Assigning default values for ${GithubReleasePlugin::class.java.simpleName}")
+                val extension: GithubReleaseExtension = project
+                        .extensions
+                        .getByType(GithubReleaseExtension::class.java)
+                extension.owner.setOrElse(Callable<CharSequence> {
                     val group = project.group.toString()
                     group.substring(group.lastIndexOf('.') + 1)
                 })
-                setOrElse("repo", e.repo, CharSequence::class.java, Callable<CharSequence> {
+                extension.repo.setOrElse(Callable<CharSequence> {
                     project.name ?: project.rootProject.name ?: project.rootProject.rootProject.name
                 })
-                setOrElse("tagName", e.tagName, CharSequence::class.java, Callable<CharSequence> {
+                extension.tagName.setOrElse(Callable<CharSequence> {
                     "v${project.version}"
                 })
-                setOrElse("targetCommitish", e.targetCommitish, CharSequence::class.java, Callable<CharSequence> {
+                extension.targetCommitish.setOrElse(Callable<CharSequence> {
                     "master"
                 })
-                setOrElse("releaseName", e.releaseName, CharSequence::class.java, Callable {
-                    e.tagName.get()
+                extension.releaseName.setOrElse(Callable {
+                    extension.tagName.get()
                 })
-                setOrElse("draft", e.draft, Boolean::class.java, Callable { false })
-                setOrElse("prerelease", e.prerelease, Boolean::class.java, Callable { false })
-                setOrElse("authorization", e.authorization, CharSequence::class.java, Callable<CharSequence> {
+                extension.draft.setOrElse(Callable { false })
+                extension.prerelease.setOrElse(Callable { false })
+                extension.authorization.setOrElse(Callable<CharSequence> {
                     //new GithubLoginApp().awaitResult().map{result -> "Basic $result"}.get()
                     null
                 })
-                setOrElse("body", e.body, CharSequence::class.java, Callable<CharSequence> {
-                    ChangeLogSupplier(e, project).call()
+                extension.body.setOrElse(Callable<CharSequence> {
+                    ChangeLogSupplier(extension, project).call()
                 })
-                setOrElse("overwrite", e.overwrite, Boolean::class.java, Callable { false })
-                setOrElse("allowUploadToExisting", e.allowUploadToExisting, Boolean::class.java, Callable { false })
+                extension.overwrite.setOrElse(Callable { false })
+                extension.allowUploadToExisting.setOrElse(Callable { false })
             }
 
         }
     }
 
-    private fun <T> setOrElse(name: String, prop: Property<T>, type: Class<T>, value: Callable<T>) {
-        if (!prop.isPresent) {
-            prop.set(project.provider(value))
+    private fun <T> Property<T>.setOrElse(value: Callable<T>) {
+        if (!isPresent) {
+            set(project.provider(value))
         }
     }
 

@@ -110,7 +110,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
     }
 
     override fun call(): String {
-        log.info(":githubRelease Generating Release Body with Commit History")
+        log.info("Generating release body using commit history.")
         val current = currentCommit.get()
         val last = lastCommit.get()
         val opts = options.get().map { it.toString() }.toTypedArray()

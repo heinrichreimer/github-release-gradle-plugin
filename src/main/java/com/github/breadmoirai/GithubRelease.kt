@@ -16,7 +16,6 @@
 
 package com.github.breadmoirai
 
-import com.j256.simplemagic.ContentInfo
 import com.j256.simplemagic.ContentInfoUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -42,7 +41,7 @@ class GithubRelease(
 ) : Runnable {
 
     companion object {
-        private val logger: Logger = Logging.getLogger(GithubRelease::class.java)
+        private val log: Logger = Logging.getLogger(GithubRelease::class.java)
         val JSON: MediaType = MediaType.parse("application/json; charset=utf-8")!!
 
         internal fun createRequestWithHeaders(authorization: CharSequence): Request.Builder {
@@ -62,42 +61,35 @@ class GithubRelease(
         val code = previousReleaseResponse.code()
         when (code) {
             200 -> {
-                println(":githubRelease EXISTING RELEASE FOUND")
+                log.info("Found existing release.")
                 val ovr = this.overwrite.get()
                 when {
                     ovr -> {
-                        logger.info(":githubRelease EXISTING RELEASE DELETED")
+                        log.info("Deleting existing release.")
                         deletePreviousRelease(previousReleaseResponse)
                         val createReleaseResponse = createRelease()
                         uploadAssets(createReleaseResponse)
                     }
                     allowUploadToExisting.getOrElse(false) -> {
-                        logger.info(":githubRelease Assets will added to existing release")
+                        log.info("Assets will be added to existing release.")
                         uploadAssets(previousReleaseResponse)
                     }
-                    else -> {
-                        val s = ":githubRelease FAILED RELEASE ALREADY EXISTS\n\tSet property['overwrite'] to true to replace existing releases"
-                        logger.error(s)
-                        throw Error(s)
-                    }
+                    else -> throw IllegalStateException("Failed to upload release, release already exists.\n" +
+                            "Set property 'overwrite = true' to replace existing releases on conflict.")
                 }
             }
             404 -> {
                 val createReleaseResponse = createRelease()
                 uploadAssets(createReleaseResponse)
             }
-            else -> {
-                val s = ":githubRelease FAILED ERROR CODE $code"
-                logger.error(s)
-                throw Error("$s\n${previousReleaseResponse.body()?.string()}")
-            }
+            else -> throw IllegalNetworkResponseCodeException(previousReleaseResponse)
         }
     }
 
 
     private fun checkForPreviousRelease(): Response {
         val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases/tags/$tagName"
-        println(":githubRelease CHECKING FOR PREVIOUS RELEASE $releaseUrl")
+        log.debug("Checking for previuos release.")
         val request: Request = createRequestWithHeaders(authorization)
                 .url(releaseUrl)
                 .get()
@@ -111,24 +103,22 @@ class GithubRelease(
         val responseJson = slurper.parseText(previous.body()?.string()) as Map<String, Any>
         val prevReleaseUrl: String = responseJson["url"] as String
 
-        println(":githubRelease DELETING PREVIOUS RELEASE $prevReleaseUrl")
+        log.info("Deleting previous release.")
         val request: Request = createRequestWithHeaders(authorization)
                 .url(prevReleaseUrl)
                 .delete()
                 .build()
         val response: Response = client.newCall(request).execute()
         val status = response.code()
-        if (status != 204) {
-            if (status == 404) {
-                throw  Error("404 Repository with Owner: '$owner' and Name: '$repo' was not found")
-            }
-            throw  Error("Couldn't delete old release: $status\n$response")
+        return when (status) {
+            204 -> response
+            404 -> throw RepositoryNotFoundException(owner.toString(), repo.toString())
+            else -> throw IllegalNetworkResponseCodeException(response)
         }
-        return response
     }
 
     private fun createRelease(): Response {
-        println(":githubRelease CREATING RELEASE")
+        log.info("Creating GitHub release.")
         val json: String = JsonOutput.toJson(mapOf(
                 "tag_name" to tagName,
                 "target_commitish" to targetCommitish,
@@ -144,16 +134,15 @@ class GithubRelease(
                 .build()
 
         val response: Response = client.newCall(request).execute()
-        val status = response.code()
-        if (status != 201) {
-            val body = response.body()?.string()
-            if (status == 404) {
-                throw  Error("404 Repository with Owner: '$owner' and Name: '$repo' was not found")
+        val code = response.code()
+        return when (code) {
+            201 -> {
+                log.info("Created release. Status: ${response.header("Status")}")
+                response
             }
-            throw  Error("Could not create release: $status ${response.message()}\n$body")
+            404 -> throw RepositoryNotFoundException(owner.toString(), repo.toString())
+            else -> throw IllegalNetworkResponseCodeException(response)
         }
-        println(":githubRelease STATUS ${response.header("Status")?.toUpperCase()}")
-        return response
     }
 
     /**
@@ -162,25 +151,30 @@ class GithubRelease(
      * @return a list of responses from uploaded each asset
      */
     private fun uploadAssets(response: Response): List<Response> {
-        println(":githubRelease UPLOADING ASSETS")
-        val responseJson = slurper.parseText(response.body()?.string()) as Map<String, Any>
-
-        val util = ContentInfoUtil()
-        if (releaseAssets.isEmpty()) {
-            println(":githubRelease NO ASSETS FOUND")
+        if (releaseAssets.isEmpty) {
+            log.debug("Skip uploading release assets, no assets found.")
             return emptyList()
         }
+
+        log.info("Uploading release assets.")
+        val responseJson = slurper.parseText(response.body()?.string()) as Map<String, Any>
+
+        val contentInfoUtil = ContentInfoUtil()
         val assetResponses = releaseAssets.files.asSequence().map { asset ->
-            println(":githubRelease UPLOADING $asset.name")
-            val info: ContentInfo = util.findMatch(asset) ?: ContentInfo.EMPTY_INFO
-            val type: MediaType? = MediaType.parse(info.mimeType)
-            if (type == null)
-                println(":githubRelease WARNING Mime Type could not be determined")
+            log.debug("Uploading asset '${asset.name}'")
+            val type = contentInfoUtil
+                    .findMatch(asset)
+                    ?.let { info ->
+                        MediaType.parse(info.mimeType)
+                    }
+            if (type == null) {
+                log.warn("Could not guess media type for file '${asset.name}'")
+            }
             val uploadUrl: String = responseJson["upload_url"] as String
             val assetBody: RequestBody = RequestBody.create(type, asset)
 
             val assetPost: Request = createRequestWithHeaders(authorization)
-                    .url(uploadUrl.replace("{?name,label}", "?name=$asset.name"))
+                    .url(uploadUrl.replace("{?name,label}", "?name=${asset.name}"))
                     .post(assetBody)
                     .build()
 

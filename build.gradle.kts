@@ -20,6 +20,7 @@ plugins {
     id("com.gradle.plugin-publish") version "0.9.7"
     id("com.github.johnrengelman.shadow") version "2.0.4"
     id("maven-publish")
+    kotlin("jvm") version "1.3.21"
 }
 
 group = "com.github.breadmoirai"
@@ -45,6 +46,7 @@ dependencies {
 //    testCompile(group = "org.testfx", name = "testfx-core", version = "4.0.13-alpha")
 //    testCompile(group = "org.testfx", name = "testfx-spock", version = "4.0.13-alpha")
 //    testCompile(gradleTestKit())
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 gradlePlugin {

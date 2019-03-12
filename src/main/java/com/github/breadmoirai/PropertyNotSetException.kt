@@ -20,8 +20,4 @@ package com.github.breadmoirai
  * @author TonTL
  * @version 8/27/2018
  */
-class PropertyNotSetException extends RuntimeException {
-    PropertyNotSetException(String s) {
-        super("The property['$s'] has not been set.")
-    }
-}
+class PropertyNotSetException(s: String) : RuntimeException("The property['$s'] has not been set.")

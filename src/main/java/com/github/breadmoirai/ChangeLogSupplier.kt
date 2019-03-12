@@ -24,7 +24,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.zeroturnaround.exec.ProcessExecutor
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.concurrent.Callable
 
@@ -83,13 +83,8 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
             val exe = this.executable.orNull
                     ?: throw  PropertyNotSetException("exe")
             val cmd = listOf(exe.toString(), "rev-list", "--max-parents=0", "--max-count=1", "HEAD")
-            return ProcessExecutor()
-                    .command(cmd)
-                    .readOutput(true)
-                    .exitValueNormal()
-                    .execute()
-                    .outputUTF8()
-                    .trim()
+
+            return project.executeAndGetOutput(cmd).trim()
         } else {
             // get the next release before the current release
             // if current release does not ezist, then gets the most recent release
@@ -111,6 +106,15 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
 
     }
 
+    private fun Project.executeAndGetOutput(commands: Iterable<Any>): String {
+        val stdOut = ByteArrayOutputStream()
+        exec {
+            it.commandLine(commands)
+            it.standardOutput = stdOut;
+        }.assertNormalExitValue()
+        return stdOut.toString()
+    }
+
     override fun     call(): String {
         log.info(":githubRelease Generating Release Body with Commit History")
         val current = currentCommit.get()
@@ -120,12 +124,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
                 ?: throw  PropertyNotSetException("get")
         val cmds = listOf(get, "rev-list", *opts, "$last..$current", "--")
         try {
-            return  ProcessExecutor()
-                    .command(cmds)
-                    .readOutput(true)
-                    .exitValueNormal()
-                    .execute()
-                    .outputUTF8()
+            return project.executeAndGetOutput(cmds)
         } catch (e:IOException) {
             if (e.cause != null && e.cause?.message?.contains("CreateProcess error=2") == true) {
                 throw  Error("Failed to run git executable to find commit history. " +

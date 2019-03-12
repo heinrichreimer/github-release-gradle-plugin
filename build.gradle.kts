@@ -33,12 +33,12 @@ repositories {
 }
 
 dependencies {
+    implementation(kotlin("stdlib-jdk8"))
     implementation("org.codehaus.groovy:groovy-all:2.5.4")
-    compile("com.squareup.okhttp3:okhttp:3.8.1")
-    compile("com.j256.simplemagic:simplemagic:1.10")
-    compile("org.zeroturnaround:zt-exec:1.10")
-
-    compileOnly("com.gradle.publish:plugin-publish-plugin:0.9.7")
+    implementation("com.squareup.okhttp3:okhttp:3.8.1")
+    implementation("org.kohsuke:github-api:1.95")
+    implementation("com.j256.simplemagic:simplemagic:1.10")
+    implementation("com.gradle.publish:plugin-publish-plugin:0.9.7")
 
 //    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
 //        exclude(group = "org.codehaus.groovy")
@@ -46,7 +46,6 @@ dependencies {
 //    testCompile(group = "org.testfx", name = "testfx-core", version = "4.0.13-alpha")
 //    testCompile(group = "org.testfx", name = "testfx-spock", version = "4.0.13-alpha")
 //    testCompile(gradleTestKit())
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 gradlePlugin {

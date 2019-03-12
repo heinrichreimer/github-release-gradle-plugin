@@ -31,18 +31,30 @@ class GithubReleaseTask : DefaultTask() {
         group = "publishing"
     }
 
-    @Input val owner : Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input val repo : Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input val authorization : Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input val tagName : Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input val targetCommitish : Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input val releaseName : Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input val body : Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    @Input val draft : Property<Boolean> = project.objects.property(Boolean::class.java)
-    @Input val prerelease : Property<Boolean> = project.objects.property(Boolean::class.java)
-    @InputFiles val releaseAssets : ConfigurableFileCollection = project.files()
-    @Input val overwrite : Property<Boolean> = project.objects.property(Boolean::class.java)
-    @Input val allowUploadToExisting : Property<Boolean> = project.objects.property(Boolean::class.java)
+    @Input
+    val owner: Property<CharSequence> = project.objects.property(CharSequence::class.java)
+    @Input
+    val repo: Property<CharSequence> = project.objects.property(CharSequence::class.java)
+    @Input
+    val authorization: Property<CharSequence> = project.objects.property(CharSequence::class.java)
+    @Input
+    val tagName: Property<CharSequence> = project.objects.property(CharSequence::class.java)
+    @Input
+    val targetCommitish: Property<CharSequence> = project.objects.property(CharSequence::class.java)
+    @Input
+    val releaseName: Property<CharSequence> = project.objects.property(CharSequence::class.java)
+    @Input
+    val body: Property<CharSequence> = project.objects.property(CharSequence::class.java)
+    @Input
+    val draft: Property<Boolean> = project.objects.property(Boolean::class.java)
+    @Input
+    val prerelease: Property<Boolean> = project.objects.property(Boolean::class.java)
+    @InputFiles
+    val releaseAssets: ConfigurableFileCollection = project.files()
+    @Input
+    val overwrite: Property<Boolean> = project.objects.property(Boolean::class.java)
+    @Input
+    val allowUploadToExisting: Property<Boolean> = project.objects.property(Boolean::class.java)
 
     @TaskAction
     fun publishRelease() {
@@ -81,83 +93,83 @@ class GithubReleaseTask : DefaultTask() {
         ).run()
     }
 
-    fun setOwner(owner : CharSequence) = this.owner.set(owner)
+    fun setOwner(owner: CharSequence) = this.owner.set(owner)
 
-    fun setOwner(owner : Provider<CharSequence>) = this.owner.set(owner)
+    fun setOwner(owner: Provider<CharSequence>) = this.owner.set(owner)
 
-    fun setOwner(owner : Callable<CharSequence>) = this.owner.set(project.provider(owner))
+    fun setOwner(owner: Callable<CharSequence>) = this.owner.set(project.provider(owner))
 
-    fun setRepo(repo : CharSequence) = this.repo.set(repo)
+    fun setRepo(repo: CharSequence) = this.repo.set(repo)
 
-    fun setRepo(repo : Provider<CharSequence>) = this.repo.set(repo)
+    fun setRepo(repo: Provider<CharSequence>) = this.repo.set(repo)
 
-    fun setRepo(repo : Callable<CharSequence>) = this.repo.set(project.provider(repo))
+    fun setRepo(repo: Callable<CharSequence>) = this.repo.set(project.provider(repo))
 
-    fun setToken(token : CharSequence) = this.authorization.set("Token $token")
+    fun setToken(token: CharSequence) = this.authorization.set("Token $token")
 
-    fun setToken(token : Provider<CharSequence>) = this.authorization.set(token.map { "Token $it" })
+    fun setToken(token: Provider<CharSequence>) = this.authorization.set(token.map { "Token $it" })
 
-    fun setToken(token : Callable<CharSequence>) = this.authorization.set(project.provider(token).map { "Token $it" })
+    fun setToken(token: Callable<CharSequence>) = this.authorization.set(project.provider(token).map { "Token $it" })
 
-    fun setAuthorization(authorization : CharSequence) = this.authorization.set(authorization)
+    fun setAuthorization(authorization: CharSequence) = this.authorization.set(authorization)
 
-    fun setAuthorization(authorization : Provider<CharSequence>) = this.authorization.set(authorization)
+    fun setAuthorization(authorization: Provider<CharSequence>) = this.authorization.set(authorization)
 
-    fun setAuthorization(authorization : Callable<CharSequence>) =
+    fun setAuthorization(authorization: Callable<CharSequence>) =
             this.authorization.set(project.provider(authorization))
 
-    fun setTagName(tagName : CharSequence) = this.tagName.set(tagName)
+    fun setTagName(tagName: CharSequence) = this.tagName.set(tagName)
 
-    fun setTagName(tagName : Provider<CharSequence>) = this.tagName.set(tagName)
+    fun setTagName(tagName: Provider<CharSequence>) = this.tagName.set(tagName)
 
-    fun setTagName(tagName : Callable<CharSequence>) = this.tagName.set(project.provider(tagName))
+    fun setTagName(tagName: Callable<CharSequence>) = this.tagName.set(project.provider(tagName))
 
-    fun setTargetCommitish(targetCommitish : CharSequence) = this.targetCommitish.set(targetCommitish)
+    fun setTargetCommitish(targetCommitish: CharSequence) = this.targetCommitish.set(targetCommitish)
 
-    fun setTargetCommitish(targetCommitish : Provider<CharSequence>) = this.targetCommitish.set(targetCommitish)
+    fun setTargetCommitish(targetCommitish: Provider<CharSequence>) = this.targetCommitish.set(targetCommitish)
 
-    fun setTargetCommitish(targetCommitish : Callable<CharSequence>) =
+    fun setTargetCommitish(targetCommitish: Callable<CharSequence>) =
             this.targetCommitish.set(project.provider(targetCommitish))
 
-    fun setReleaseName(releaseName : CharSequence) = this.releaseName.set(releaseName)
+    fun setReleaseName(releaseName: CharSequence) = this.releaseName.set(releaseName)
 
-    fun setReleaseName(releaseName : Provider<CharSequence>) = this.releaseName.set(releaseName)
+    fun setReleaseName(releaseName: Provider<CharSequence>) = this.releaseName.set(releaseName)
 
-    fun setReleaseName(releaseName : Callable<CharSequence>) = this.releaseName.set(project.provider(releaseName))
+    fun setReleaseName(releaseName: Callable<CharSequence>) = this.releaseName.set(project.provider(releaseName))
 
-    fun setBody(body : CharSequence) = this.body.set(body)
+    fun setBody(body: CharSequence) = this.body.set(body)
 
-    fun setBody(body : Provider<CharSequence>) = this.body.set(body)
+    fun setBody(body: Provider<CharSequence>) = this.body.set(body)
 
-    fun setBody(body : Callable<CharSequence>) = this.body.set(project.provider(body))
+    fun setBody(body: Callable<CharSequence>) = this.body.set(project.provider(body))
 
-    fun setDraft(draft : Boolean) = this.draft.set(draft)
+    fun setDraft(draft: Boolean) = this.draft.set(draft)
 
-    fun setDraft(draft : Provider<Boolean>) = this.draft.set(draft)
+    fun setDraft(draft: Provider<Boolean>) = this.draft.set(draft)
 
-    fun setDraft(draft : Callable<Boolean>) = this.draft.set(project.provider(draft))
+    fun setDraft(draft: Callable<Boolean>) = this.draft.set(project.provider(draft))
 
-    fun setPrerelease(prerelease : Boolean) = this.prerelease.set(prerelease)
+    fun setPrerelease(prerelease: Boolean) = this.prerelease.set(prerelease)
 
-    fun setPrerelease(prerelease : Provider<Boolean>) = this.prerelease.set(prerelease)
+    fun setPrerelease(prerelease: Provider<Boolean>) = this.prerelease.set(prerelease)
 
-    fun setPrerelease(prerelease : Callable<Boolean>) = this.prerelease.set(project.provider(prerelease))
+    fun setPrerelease(prerelease: Callable<Boolean>) = this.prerelease.set(project.provider(prerelease))
 
     fun setReleaseAssets(vararg assets: Any) = this.releaseAssets.setFrom(assets)
 
-    fun setOverwrite(overwrite : Boolean) = this.overwrite.set(overwrite)
+    fun setOverwrite(overwrite: Boolean) = this.overwrite.set(overwrite)
 
-    fun setOverwrite(overwrite : Provider<Boolean>) = this.overwrite.set(overwrite)
+    fun setOverwrite(overwrite: Provider<Boolean>) = this.overwrite.set(overwrite)
 
-    fun setOverwrite(overwrite : Callable<Boolean>) = this.overwrite.set(project.provider(overwrite))
+    fun setOverwrite(overwrite: Callable<Boolean>) = this.overwrite.set(project.provider(overwrite))
 
-    fun setAllowUploadToExisting(allowUploadToExisting : Boolean) =
+    fun setAllowUploadToExisting(allowUploadToExisting: Boolean) =
             this.allowUploadToExisting.set(allowUploadToExisting)
 
-    fun setAllowUploadToExisting(allowUploadToExisting : Provider<Boolean>) =
+    fun setAllowUploadToExisting(allowUploadToExisting: Provider<Boolean>) =
             this.allowUploadToExisting.set(allowUploadToExisting)
 
-    fun setAllowUploadToExisting(allowUploadToExisting : Callable<Boolean>) =
+    fun setAllowUploadToExisting(allowUploadToExisting: Callable<Boolean>) =
             this.allowUploadToExisting.set(project.provider(allowUploadToExisting))
 
 }

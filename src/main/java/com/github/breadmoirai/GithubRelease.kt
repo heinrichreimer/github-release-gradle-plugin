@@ -20,11 +20,7 @@ import com.j256.simplemagic.ContentInfo
 import com.j256.simplemagic.ContentInfoUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
+import okhttp3.*
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -41,15 +37,15 @@ class GithubRelease(
         private val draft: Boolean,
         private val prerelease: Boolean,
         private val releaseAssets: FileCollection,
-        private val  overwrite: Provider<Boolean>,
-        private val  allowUploadToExisting:Provider<Boolean>
+        private val overwrite: Provider<Boolean>,
+        private val allowUploadToExisting: Provider<Boolean>
 ) : Runnable {
 
     companion object {
         private val logger: Logger = Logging.getLogger(GithubRelease::class.java)
         val JSON: MediaType = MediaType.parse("application/json; charset=utf-8")!!
 
-        internal fun  createRequestWithHeaders( authorization: CharSequence) : Request.Builder{
+        internal fun createRequestWithHeaders(authorization: CharSequence): Request.Builder {
             return Request.Builder()
                     .addHeader("Authorization", authorization.toString())
                     .addHeader("User-Agent", "breadmoirai github-release-gradle-plugin")
@@ -58,8 +54,8 @@ class GithubRelease(
         }
     }
 
-    private val  client:OkHttpClient =  OkHttpClient()
-    private val  slurper:JsonSlurper =  JsonSlurper()
+    private val client: OkHttpClient = OkHttpClient()
+    private val slurper: JsonSlurper = JsonSlurper()
 
     override fun run() {
         val previousReleaseResponse = checkForPreviousRelease()
@@ -100,19 +96,19 @@ class GithubRelease(
     }
 
 
-     private fun checkForPreviousRelease() :Response{
+    private fun checkForPreviousRelease(): Response {
         val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases/tags/$tagName"
         println(":githubRelease CHECKING FOR PREVIOUS RELEASE $releaseUrl")
         val request: Request = createRequestWithHeaders(authorization)
                 .url(releaseUrl)
                 .get()
                 .build()
-         return client
-                 .newCall(request)
-                 .execute()
+        return client
+                .newCall(request)
+                .execute()
     }
 
-     private fun deletePreviousRelease(previous:Response): Response {
+    private fun deletePreviousRelease(previous: Response): Response {
         val responseJson = slurper.parseText(previous.body()?.string()) as Map<String, Any>
         val prevReleaseUrl: String = responseJson["url"] as String
 
@@ -121,7 +117,7 @@ class GithubRelease(
                 .url(prevReleaseUrl)
                 .delete()
                 .build()
-        val response:Response = client.newCall(request).execute()
+        val response: Response = client.newCall(request).execute()
         val status = response.code()
         if (status != 204) {
             if (status == 404) {
@@ -135,13 +131,13 @@ class GithubRelease(
     private fun createRelease(): Response {
         println(":githubRelease CREATING RELEASE")
         val json: String = JsonOutput.toJson(mapOf(
-                "tag_name"        to tagName,
+                "tag_name" to tagName,
                 "target_commitish" to targetCommitish,
-        "name"            to releaseName,
-                "body"            to body,
-                "draft"           to draft,
-                "prerelease"      to prerelease
-                ))
+                "name" to releaseName,
+                "body" to body,
+                "draft" to draft,
+                "prerelease" to prerelease
+        ))
         val requestBody: RequestBody = RequestBody.create(JSON, json)
         val request: Request = createRequestWithHeaders(authorization)
                 .url("https://api.github.com/repos/$owner/$repo/releases")
@@ -166,11 +162,11 @@ class GithubRelease(
      * @param response this response should reference the release that the assets will be uploaded to
      * @return a list of responses from uploaded each asset
      */
-    private fun uploadAssets( response:Response): List<Response> {
+    private fun uploadAssets(response: Response): List<Response> {
         println(":githubRelease UPLOADING ASSETS")
         val responseJson = slurper.parseText(response.body()?.string()) as Map<String, Any>
 
-        val util =  ContentInfoUtil()
+        val util = ContentInfoUtil()
         if (releaseAssets.isEmpty()) {
             println(":githubRelease NO ASSETS FOUND")
             return emptyList()
@@ -191,7 +187,7 @@ class GithubRelease(
 
             client.newCall(assetPost).execute()
         }
-        assetResponses.forEach{ it.close() }
+        assetResponses.forEach { it.close() }
         return assetResponses.toList()
     }
 

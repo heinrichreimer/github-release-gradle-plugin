@@ -28,14 +28,13 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.concurrent.Callable
 
-@Suppress("UnstableApiUsage")
 class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: Project) : Callable<String> {
 
     companion object {
-        private val log : Logger = Logging.getLogger(ChangeLogSupplier::class.java)
+        private val log: Logger = Logging.getLogger(ChangeLogSupplier::class.java)
     }
 
-    private val  owner: Provider<CharSequence> = extension.getOwnerProvider()
+    private val owner: Provider<CharSequence> = extension.getOwnerProvider()
     private val repo: Provider<CharSequence> = extension.getRepoProvider()
     private val authorization: Provider<CharSequence> = extension.getAuthorizationProvider()
     private val tag: Provider<CharSequence> = extension.getTagNameProvider()
@@ -68,7 +67,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
 
         // query the github api for releases
         val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases"
-        val response:Response =  OkHttpClient().newCall(GithubRelease.createRequestWithHeaders(auth)
+        val response: Response = OkHttpClient().newCall(GithubRelease.createRequestWithHeaders(auth)
                 .url(releaseUrl)
                 .get()
                 .build()
@@ -76,7 +75,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
         if (response.code() != 200) {
             return ""
         }
-        val releases:List<Any> =  JsonSlurper().parse(response.body()?.bytes()) as List<Any>
+        val releases: List<Any> = JsonSlurper().parse(response.body()?.bytes()) as List<Any>
         // find current release if exists
         val index = releases.indexOfFirst { release -> (release as Map<String, Any>)["tag_name"] == tag }
         if (releases.isEmpty()) {
@@ -91,12 +90,12 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
             val lastRelease = releases[index + 1] as Map<String, Any>
             val lastTag = lastRelease["tag_name"]
             val tagUrl = "https://api.github.com/repos/$owner/$repo/git/refs/tags/$lastTag"
-            val tagResponse: Response =  OkHttpClient()
+            val tagResponse: Response = OkHttpClient()
                     .newCall(GithubRelease.createRequestWithHeaders(auth)
-                    .url(tagUrl)
-                    .get()
-                    .build()
-            ).execute()
+                            .url(tagUrl)
+                            .get()
+                            .build()
+                    ).execute()
 
             // retrieves the sha1 commit from the response
             val bodyS = tagResponse.body()?.bytes()
@@ -115,7 +114,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
         return stdOut.toString()
     }
 
-    override fun     call(): String {
+    override fun call(): String {
         log.info(":githubRelease Generating Release Body with Commit History")
         val current = currentCommit.get()
         val last = lastCommit.get()
@@ -125,7 +124,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
         val cmds = listOf(get, "rev-list", *opts, "$last..$current", "--")
         try {
             return project.executeAndGetOutput(cmds)
-        } catch (e:IOException) {
+        } catch (e: IOException) {
             if (e.cause != null && e.cause?.message?.contains("CreateProcess error=2") == true) {
                 throw  Error("Failed to run git executable to find commit history. " +
                         "Please specify the path to the git executable.\n")
@@ -134,99 +133,99 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
         }
     }
 
-    fun setCurrentCommit( currentCommit:Provider<CharSequence>) {
+    fun setCurrentCommit(currentCommit: Provider<CharSequence>) {
         this.currentCommit.set(currentCommit)
     }
 
-    fun currentCommit(currentCommit : Provider<CharSequence>) {
+    fun currentCommit(currentCommit: Provider<CharSequence>) {
         this.currentCommit.set(currentCommit)
     }
 
-    fun setLastCommit(lastCommit : Provider<CharSequence>) {
+    fun setLastCommit(lastCommit: Provider<CharSequence>) {
         this.lastCommit.set(lastCommit)
     }
 
-    fun lastCommit(lastCommit : Provider<CharSequence>) {
+    fun lastCommit(lastCommit: Provider<CharSequence>) {
         this.lastCommit.set(lastCommit)
     }
 
-    fun setOptions(options : Provider<List<Any>>) {
+    fun setOptions(options: Provider<List<Any>>) {
         this.options.set(options)
     }
 
-    fun options(options : Provider<List<Any>>) {
+    fun options(options: Provider<List<Any>>) {
         this.options.set(options)
     }
 
-    fun setExecutable(gitExecutable : Provider<CharSequence>) {
+    fun setExecutable(gitExecutable: Provider<CharSequence>) {
         this.executable.set(gitExecutable)
     }
 
-    fun executable(gitExecutable : Provider<CharSequence>) {
+    fun executable(gitExecutable: Provider<CharSequence>) {
         this.executable.set(gitExecutable)
     }
 
-    fun setCurrentCommit(currentCommit : Callable<CharSequence>) {
+    fun setCurrentCommit(currentCommit: Callable<CharSequence>) {
         setCurrentCommit(project.provider(currentCommit))
     }
 
-    fun currentCommit(currentCommit : Callable<CharSequence>) {
+    fun currentCommit(currentCommit: Callable<CharSequence>) {
         setCurrentCommit(project.provider(currentCommit))
     }
 
-    fun setLastCommit(lastCommit : Callable<CharSequence>) {
+    fun setLastCommit(lastCommit: Callable<CharSequence>) {
         setLastCommit(project.provider(lastCommit))
     }
 
-    fun lastCommit(lastCommit : Callable<CharSequence>) {
+    fun lastCommit(lastCommit: Callable<CharSequence>) {
         setLastCommit(project.provider(lastCommit))
     }
 
-    fun setOptions(options : Callable<List<Any>>) {
+    fun setOptions(options: Callable<List<Any>>) {
         setOptions(project.provider(options))
     }
 
-    fun options(options : Callable<List<Any>>) {
+    fun options(options: Callable<List<Any>>) {
         setOptions(project.provider(options))
     }
 
-    fun setExecutable(gitExecutable : Callable<CharSequence>) {
+    fun setExecutable(gitExecutable: Callable<CharSequence>) {
         setExecutable(project.provider(gitExecutable))
     }
 
-    fun executable(gitExecutable : Callable<CharSequence>) {
+    fun executable(gitExecutable: Callable<CharSequence>) {
         setExecutable(project.provider(gitExecutable))
     }
 
-    fun setCurrentCommit(currentCommit : CharSequence) {
+    fun setCurrentCommit(currentCommit: CharSequence) {
         setCurrentCommit(Callable { currentCommit })
     }
 
-    fun currentCommit(currentCommit : CharSequence) {
+    fun currentCommit(currentCommit: CharSequence) {
         setCurrentCommit(Callable { currentCommit })
     }
 
-    fun setLastCommit(lastCommit : CharSequence) {
+    fun setLastCommit(lastCommit: CharSequence) {
         setLastCommit(Callable { lastCommit })
     }
 
-    fun lastCommit(lastCommit : CharSequence) {
+    fun lastCommit(lastCommit: CharSequence) {
         setLastCommit(Callable { lastCommit })
     }
 
-    fun setOptions(options : List<Any>) {
+    fun setOptions(options: List<Any>) {
         setOptions(Callable { options })
     }
 
-    fun options( options: List<Any>) {
+    fun options(options: List<Any>) {
         setOptions(Callable { options })
     }
 
-    fun setExecutable( gitExecutable:CharSequence) {
+    fun setExecutable(gitExecutable: CharSequence) {
         setExecutable(Callable { gitExecutable })
     }
 
-    fun executable( gitExecutable:CharSequence) {
+    fun executable(gitExecutable: CharSequence) {
         setExecutable(Callable { gitExecutable })
     }
 }

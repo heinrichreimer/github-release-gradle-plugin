@@ -56,14 +56,10 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
      * @return
      */
     private fun getLastReleaseCommit(): CharSequence {
-        val owner = this.owner.orNull
-                ?: throw  PropertyNotSetException("owner")
-        val repo = this.repo.orNull
-                ?: throw  PropertyNotSetException("repo")
-        val auth = authorization.orNull
-                ?: throw  PropertyNotSetException("auth")
-        val tag = this.tag.orNull
-                ?: throw  PropertyNotSetException("tag")
+        val owner = this.owner.get()
+        val repo = this.repo.get()
+        val auth = authorization.get()
+        val tag = this.tag.get()
 
         // query the github api for releases
         val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases"
@@ -79,8 +75,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
         // find current release if exists
         val index = releases.indexOfFirst { release -> (release as Map<String, Any>)["tag_name"] == tag }
         if (releases.isEmpty()) {
-            val exe = this.executable.orNull
-                    ?: throw  PropertyNotSetException("exe")
+            val exe = this.executable.get()
             val cmd = listOf(exe.toString(), "rev-list", "--max-parents=0", "--max-count=1", "HEAD")
 
             return project.executeAndGetOutput(cmd).trim()
@@ -119,8 +114,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
         val current = currentCommit.get()
         val last = lastCommit.get()
         val opts = options.get().map { it.toString() }.toTypedArray()
-        val get = executable.orNull?.toString()
-                ?: throw  PropertyNotSetException("get")
+        val get = executable.get().toString()
         val cmds = listOf(get, "rev-list", *opts, "$last..$current", "--")
         try {
             return project.executeAndGetOutput(cmds)

@@ -58,24 +58,15 @@ class GithubReleaseTask : DefaultTask() {
 
     @TaskAction
     fun publishRelease() {
-        val tag = tagName.getOrNull()
-                ?: throw PropertyNotSetException("tagName")
-        val tar = targetCommitish.getOrNull()
-                ?: throw PropertyNotSetException("targetCommitish")
-        val rel = releaseName.getOrNull()
-                ?: throw PropertyNotSetException("releaseName")
-        val bod = body.getOrNull()
-                ?: throw PropertyNotSetException("body")
-        val own = owner.getOrNull()
-                ?: throw PropertyNotSetException("owner")
-        val rep = repo.getOrNull()
-                ?: throw PropertyNotSetException("repo")
-        val dra = draft.getOrNull()
-                ?: throw PropertyNotSetException("draft")
-        val pre = prerelease.getOrNull()
-                ?: throw PropertyNotSetException("prerelease")
-        val auth = authorization.getOrNull()
-                ?: throw PropertyNotSetException("authorization")
+        val tag = tagName.get()
+        val tar = targetCommitish.get()
+        val rel = releaseName.get()
+        val bod = body.get()
+        val own = owner.get()
+        val rep = repo.get()
+        val dra = draft.get()
+        val pre = prerelease.get()
+        val auth = authorization.get()
         val releaseAssets = releaseAssets
         GithubRelease(
                 own,

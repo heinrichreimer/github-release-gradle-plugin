@@ -63,8 +63,7 @@ class GithubRelease(
         when (code) {
             200 -> {
                 println(":githubRelease EXISTING RELEASE FOUND")
-                val ovr = this.overwrite.getOrNull()
-                        ?: throw PropertyNotSetException("overwrite")
+                val ovr = this.overwrite.get()
                 when {
                     ovr -> {
                         logger.info(":githubRelease EXISTING RELEASE DELETED")

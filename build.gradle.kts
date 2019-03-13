@@ -21,6 +21,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "2.0.4"
     id("maven-publish")
     kotlin("jvm") version "1.3.21"
+    kotlin("kapt") version "1.3.21"
 }
 
 group = "com.github.breadmoirai"
@@ -36,7 +37,6 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.codehaus.groovy:groovy-all:2.5.4")
     implementation("com.squareup.okhttp3:okhttp:3.8.1")
-    implementation("org.kohsuke:github-api:1.95")
     implementation("com.j256.simplemagic:simplemagic:1.10")
     implementation("com.gradle.publish:plugin-publish-plugin:0.9.7")
     implementation("org.zeroturnaround:zt-exec:1.10")
@@ -45,6 +45,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.5.0")
     implementation("com.squareup.moshi:moshi:1.8.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.8.0")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.8.0")
 
 //    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
 //        exclude(group = "org.codehaus.groovy")

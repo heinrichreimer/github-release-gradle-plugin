@@ -1,7 +1,9 @@
-package com.github.breadmoirai.github
+package com.github.breadmoirai.api
 
+import com.squareup.moshi.JsonClass
 import java.net.URL
 
+@JsonClass(generateAdapter = true)
 data class Release(
         val url: URL,
         val upload_url: URL,

@@ -1,4 +1,4 @@
-package com.github.breadmoirai.github
+package com.github.breadmoirai.api
 
 import retrofit2.Call
 import retrofit2.http.Body

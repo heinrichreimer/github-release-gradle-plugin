@@ -1,9 +1,11 @@
-package com.github.breadmoirai.github
+package com.github.breadmoirai.api
 
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class GitReference(
-        @Json(name = "object")
+        @field:Json(name = "object")
         val referenced_object: Object
 ) {
     data class Object(

@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai
 
+import com.github.breadmoirai.configuration.copyFrom
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger

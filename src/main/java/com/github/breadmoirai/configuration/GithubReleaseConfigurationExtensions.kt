@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.github.breadmoirai
+package com.github.breadmoirai.configuration
 
 fun GithubReleaseConfiguration.copyTo(configuration: MutableGithubReleaseConfiguration) {
     configuration.ownerProvider = ownerProvider

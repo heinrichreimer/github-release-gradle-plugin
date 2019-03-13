@@ -1,4 +1,4 @@
-package com.github.breadmoirai
+package com.github.breadmoirai.exception
 
 class RepositoryNotFoundException(
         owner: String,

@@ -16,6 +16,9 @@
 
 package com.github.breadmoirai
 
+import com.github.breadmoirai.configuration.GithubReleaseConfiguration
+import com.github.breadmoirai.exception.IllegalNetworkResponseCodeException
+import com.github.breadmoirai.exception.RepositoryNotFoundException
 import com.j256.simplemagic.ContentInfoUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper

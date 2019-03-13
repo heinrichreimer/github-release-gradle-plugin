@@ -1,4 +1,4 @@
-package com.github.breadmoirai
+package com.github.breadmoirai.exception
 
 import okhttp3.Response
 import java.io.IOException

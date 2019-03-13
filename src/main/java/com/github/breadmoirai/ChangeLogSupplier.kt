@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai
 
+import com.github.breadmoirai.configuration.GithubReleaseConfiguration
 import groovy.json.JsonSlurper
 import okhttp3.OkHttpClient
 import okhttp3.Response

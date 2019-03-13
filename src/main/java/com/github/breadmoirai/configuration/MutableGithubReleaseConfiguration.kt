@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.github.breadmoirai
+package com.github.breadmoirai.configuration
 
 import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider

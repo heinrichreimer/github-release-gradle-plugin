@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai
 
+import com.github.breadmoirai.configuration.MutableGithubReleaseConfiguration
 import com.github.breadmoirai.util.collectionDelegate
 import com.github.breadmoirai.util.property
 import com.github.breadmoirai.util.providerDelegate

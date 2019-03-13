@@ -16,6 +16,7 @@
 
 package com.github.breadmoirai
 
+import com.github.breadmoirai.configuration.MutableGithubReleaseConfiguration
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory

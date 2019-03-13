@@ -36,58 +36,11 @@ import com.j256.simplemagic.ContentInfoUtil
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import okhttp3.*
-import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Provider
 
-class GithubRelease : Runnable {
-
-    private val owner: Provider<CharSequence>
-    private val repo: Provider<CharSequence>
-    private val tagName: Provider<CharSequence>
-    private val targetCommitish: Provider<CharSequence>
-    private val releaseName: Provider<CharSequence>
-    private val body: Provider<CharSequence>
-    private val draft: Provider<Boolean>
-    private val prerelease: Provider<Boolean>
-    private val releaseAssets: FileCollection
-    private val overwrite: Provider<Boolean>
-    private val allowUploadToExisting: Provider<Boolean>
-
-    constructor(owner: Provider<CharSequence>, repo: Provider<CharSequence>, authorization: Provider<CharSequence>, tagName: Provider<CharSequence>, targetCommitish: Provider<CharSequence>, releaseName: Provider<CharSequence>, body: Provider<CharSequence>, draft: Provider<Boolean>, prerelease: Provider<Boolean>, releaseAssets: FileCollection, overwrite: Provider<Boolean>, allowUploadToExisting: Provider<Boolean>) {
-        this.owner = owner
-        this.repo = repo
-        this.tagName = tagName
-        this.targetCommitish = targetCommitish
-        this.releaseName = releaseName
-        this.body = body
-        this.draft = draft
-        this.prerelease = prerelease
-        this.releaseAssets = releaseAssets
-        this.overwrite = overwrite
-        this.allowUploadToExisting = allowUploadToExisting
-        this.authorization = authorization.map { "Token $it" as CharSequence }
-        this.client = OkHttpClient()
-        this.slurper = JsonSlurper()
-    }
-
-    private val authorization: Provider<CharSequence>
-
-    constructor(configuration: GithubReleaseConfiguration) : this(
-            owner = configuration.ownerProvider,
-            repo = configuration.repoProvider,
-            authorization = configuration.authorizationProvider,
-            tagName = configuration.tagNameProvider,
-            targetCommitish = configuration.targetCommitishProvider,
-            releaseName = configuration.releaseNameProvider,
-            body = configuration.bodyProvider,
-            draft = configuration.draftProvider,
-            prerelease = configuration.prereleaseProvider,
-            releaseAssets = configuration.releaseAssets,
-            overwrite = configuration.overwriteProvider,
-            allowUploadToExisting = configuration.allowUploadToExistingProvider
-    )
+class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, GithubReleaseConfiguration by configuration {
 
     companion object {
         private val log: Logger = Logging.getLogger(GithubRelease::class.java)
@@ -95,15 +48,15 @@ class GithubRelease : Runnable {
 
         internal fun createRequestWithHeaders(authorization: Provider<CharSequence>): Request.Builder {
             return Request.Builder()
-                    .addHeader("Authorization", authorization.get().toString())
+                    .addHeader("Authorization", "token " + authorization.get().toString())
                     .addHeader("User-Agent", "breadmoirai github-release-gradle-plugin")
                     .addHeader("Accept", "application/vnd.github.v3+json")
                     .addHeader("Content-Type", JSON.toString())
         }
     }
 
-    private val client: OkHttpClient
-    private val slurper: JsonSlurper
+    private val client: OkHttpClient = OkHttpClient()
+    private val slurper: JsonSlurper = JsonSlurper()
 
     override fun run() {
         val previousReleaseResponse = checkForPreviousRelease()
@@ -111,15 +64,14 @@ class GithubRelease : Runnable {
         when (code) {
             200 -> {
                 log.info("Found existing release.")
-                val ovr = this.overwrite.get()
                 when {
-                    ovr -> {
+                    overwrite -> {
                         log.info("Deleting existing release.")
                         deletePreviousRelease(previousReleaseResponse)
                         val createReleaseResponse = createRelease()
                         uploadAssets(createReleaseResponse)
                     }
-                    allowUploadToExisting.getOrElse(false) -> {
+                    allowUploadToExistingProvider.getOrElse(false) -> {
                         log.info("Assets will be added to existing release.")
                         uploadAssets(previousReleaseResponse)
                     }
@@ -139,7 +91,7 @@ class GithubRelease : Runnable {
     private fun checkForPreviousRelease(): Response {
         val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases/tags/$tagName"
         log.debug("Checking for previuos release.")
-        val request: Request = createRequestWithHeaders(authorization)
+        val request: Request = createRequestWithHeaders(authorizationProvider)
                 .url(releaseUrl)
                 .get()
                 .build()
@@ -153,7 +105,7 @@ class GithubRelease : Runnable {
         val prevReleaseUrl: String = responseJson["url"] as String
 
         log.info("Deleting previous release.")
-        val request: Request = createRequestWithHeaders(authorization)
+        val request: Request = createRequestWithHeaders(authorizationProvider)
                 .url(prevReleaseUrl)
                 .delete()
                 .build()
@@ -177,7 +129,7 @@ class GithubRelease : Runnable {
                 "prerelease" to prerelease
         ))
         val requestBody: RequestBody = RequestBody.create(JSON, json)
-        val request: Request = createRequestWithHeaders(authorization)
+        val request: Request = createRequestWithHeaders(authorizationProvider)
                 .url("https://api.github.com/repos/$owner/$repo/releases")
                 .post(requestBody)
                 .build()
@@ -200,7 +152,8 @@ class GithubRelease : Runnable {
      * @return a list of responses from uploaded each asset
      */
     private fun uploadAssets(response: Response): List<Response> {
-        if (releaseAssets.isEmpty) {
+        val assets = releaseAssets.files
+        if (assets.isEmpty()) {
             log.debug("Skip uploading release assets, no assets found.")
             return emptyList()
         }
@@ -209,7 +162,7 @@ class GithubRelease : Runnable {
         val responseJson = slurper.parseText(response.body()?.string()) as Map<String, Any>
 
         val contentInfoUtil = ContentInfoUtil()
-        val assetResponses = releaseAssets.files.asSequence().map { asset ->
+        val assetResponses = assets.asSequence().map { asset ->
             log.debug("Uploading asset '${asset.name}'")
             val type = contentInfoUtil
                     .findMatch(asset)
@@ -222,7 +175,7 @@ class GithubRelease : Runnable {
             val uploadUrl: String = responseJson["upload_url"] as String
             val assetBody: RequestBody = RequestBody.create(type, asset)
 
-            val assetPost: Request = createRequestWithHeaders(authorization)
+            val assetPost: Request = createRequestWithHeaders(authorizationProvider)
                     .url(uploadUrl.replace("{?name,label}", "?name=${asset.name}"))
                     .post(assetBody)
                     .build()

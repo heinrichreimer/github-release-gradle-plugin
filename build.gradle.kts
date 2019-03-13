@@ -41,6 +41,11 @@ dependencies {
     implementation("com.gradle.publish:plugin-publish-plugin:0.9.7")
     implementation("org.zeroturnaround:zt-exec:1.10")
 
+    implementation("com.squareup.retrofit2:retrofit:2.5.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.5.0")
+    implementation("com.squareup.moshi:moshi:1.8.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.8.0")
+
 //    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
 //        exclude(group = "org.codehaus.groovy")
 //    }

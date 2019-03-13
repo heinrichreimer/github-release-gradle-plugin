@@ -35,16 +35,19 @@ interface GithubReleaseConfiguration {
     val ownerProvider: Provider<String>
     @get:Input
     val owner: String
+        get() = ownerProvider.get()
 
     @get:Input
     val repositoryProvider: Provider<String>
     @get:Input
     val repository: String
+        get() = repositoryProvider.get()
 
     @get:Input
     val authorizationProvider: Provider<String>
     @get:Input
     val authorization: String
+        get() = authorizationProvider.get()
 
     @get:Input
     val tokenProvider: Provider<String>
@@ -57,31 +60,37 @@ interface GithubReleaseConfiguration {
     val tagProvider: Provider<String>
     @get:Input
     val tag: String
+        get() = tagProvider.get()
 
     @get:Input
     val targetProvider: Provider<String>
     @get:Input
     val target: String
+        get() = targetProvider.get()
 
     @get:Input
     val nameProvider: Provider<String>
     @get:Input
     val name: String
+        get() = nameProvider.get()
 
     @get:Input
     val bodyProvider: Provider<String>
     @get:Input
     val body: String
+        get() = bodyProvider.get()
 
     @get:Input
     val isDraftProvider: Provider<Boolean>
     @get:Input
     val isDraft: Boolean
+        get() = isDraftProvider.get()
 
     @get:Input
     val isPreReleaseProvider: Provider<Boolean>
     @get:Input
     val isPreRelease: Boolean
+        get() = isPreReleaseProvider.get()
 
     @get:InputFiles
     val releaseAssets: FileCollection
@@ -90,4 +99,5 @@ interface GithubReleaseConfiguration {
     val updateModeProvider: Provider<UpdateMode>
     @get:Input
     val updateMode: UpdateMode
+        get() = updateModeProvider.get()
 }

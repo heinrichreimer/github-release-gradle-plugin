@@ -33,19 +33,23 @@ interface ChangeLogSupplierConfiguration {
     val gitExecutableProvider: Provider<String>
     @get:Input
     val gitExecutable: String
+        get() = gitExecutableProvider.get()
 
     @get:Input
     val currentCommitProvider: Provider<String>
     @get:Input
     val currentCommit: String
+        get() = currentCommitProvider.get()
 
     @get:Input
     val lastCommitProvider: Provider<String>
     @get:Input
     val lastCommit: String
+        get() = lastCommitProvider.get()
 
     @get:Input
     val gitOptionsProvider: Provider<Iterable<Any>>
     @get:Input
     val gitOptions: Iterable<Any>
+        get() = gitOptionsProvider.get()
 }

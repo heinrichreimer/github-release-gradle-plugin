@@ -41,7 +41,6 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ProviderFactory
 import org.zeroturnaround.exec.ProcessExecutor
 import java.io.IOException
-import java.util.concurrent.Callable
 
 @Suppress("UnstableApiUsage")
 class ChangeLogSupplier(
@@ -50,7 +49,6 @@ class ChangeLogSupplier(
         private val layout: ProjectLayout,
         private val providers: ProviderFactory
 ) :
-        Callable<String>,
         MutableChangeLogSupplierConfiguration by ChangeLogSupplierExtension(objects, providers),
         GithubReleaseConfiguration by configuration {
 
@@ -90,7 +88,6 @@ class ChangeLogSupplier(
 
 
         // query the github api for releases
-        val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases"
         val response = service
                 .getReleases(owner.toString(), repo.toString())
                 .await()
@@ -130,7 +127,7 @@ class ChangeLogSupplier(
                 .outputUTF8()
     }
 
-    override fun call(): String {
+    fun call(): String {
         log.info("Generating release body using commit history.")
         val opts = options.map { it.toString() }.toTypedArray()
         val cmds = listOf(executable.toString(), "rev-list", *opts, "$lastCommit..$currentCommit", "--")

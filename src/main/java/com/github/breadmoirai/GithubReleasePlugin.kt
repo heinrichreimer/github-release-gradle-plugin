@@ -35,6 +35,7 @@ import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+@Suppress("UnstableApiUsage")
 class GithubReleasePlugin : Plugin<Project> {
 
     companion object {
@@ -48,13 +49,26 @@ class GithubReleasePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         this.project = project
 
-        val githubReleaseExtension = project
-                .extensions
-                .create(EXTENSION_NAME, GithubReleaseExtension::class.java, project)
+        val githubReleaseExtension = project.extensions
+                .create(
+                        EXTENSION_NAME,
+                        GithubReleaseExtension::class.java,
+                        project.objects,
+                        project.layout,
+                        project.providers
+                )
 
-        project.tasks.create(TASK_NAME, GithubReleaseTask::class.java) {
-            it.copyFrom(githubReleaseExtension)
-        }
+        project.tasks
+                .register(
+                        TASK_NAME,
+                        GithubReleaseTask::class.java,
+                        project.objects,
+                        project.layout,
+                        project.providers
+                )
+                .configure {
+                    it.copyFrom(githubReleaseExtension)
+                }
 
         project.afterEvaluate {
             val self = project.plugins.findPlugin(GithubReleasePlugin::class.java)

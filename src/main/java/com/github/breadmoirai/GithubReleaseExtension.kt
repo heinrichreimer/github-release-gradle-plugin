@@ -108,8 +108,8 @@ import org.gradle.api.tasks.Internal
  */
 @Suppress("UnstableApiUsage")
 class GithubReleaseExtension(
-        private val objects: ObjectFactory,
-        private val layout: ProjectLayout,
+        objects: ObjectFactory,
+        layout: ProjectLayout,
         private val providers: ProviderFactory
 ) : MutableGithubReleaseConfiguration {
 

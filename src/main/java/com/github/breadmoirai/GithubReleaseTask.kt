@@ -41,9 +41,9 @@ import javax.inject.Inject
 @Suppress("UnstableApiUsage")
 class GithubReleaseTask @Inject constructor(
         objects: ObjectFactory,
-        providers: ProviderFactory,
-        files: ProjectLayout
-) : DefaultTask(), MutableGithubReleaseConfiguration by GithubReleaseExtension(objects, files, providers) {
+        layout: ProjectLayout,
+        providers: ProviderFactory
+) : DefaultTask(), MutableGithubReleaseConfiguration by GithubReleaseExtension(objects, layout, providers) {
 
     init {
         group = "publishing"

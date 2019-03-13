@@ -95,5 +95,4 @@ interface GithubReleaseConfiguration {
     val allowUploadToExistingProvider: Provider<Boolean>
     @get:Input
     val allowUploadToExisting: Boolean
-
 }

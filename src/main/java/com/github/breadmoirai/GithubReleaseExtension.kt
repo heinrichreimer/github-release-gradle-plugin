@@ -29,6 +29,7 @@
 
 package com.github.breadmoirai
 
+import com.github.breadmoirai.configuration.MutableChangeLogSupplierConfiguration
 import com.github.breadmoirai.configuration.MutableGithubReleaseConfiguration
 import com.github.breadmoirai.util.collectionDelegate
 import com.github.breadmoirai.util.property
@@ -36,11 +37,13 @@ import com.github.breadmoirai.util.providerDelegate
 import com.github.breadmoirai.util.valueDelegate
 import groovy.lang.Closure
 import groovy.lang.DelegatesTo
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Internal
 
@@ -208,9 +211,19 @@ class GithubReleaseExtension(
         allowUploadToExistingProvider = providers.provider { allowUploadToExisting() }
     }
 
-    fun changelog(@DelegatesTo(ChangeLogSupplier::class) closure: Closure<ChangeLogSupplier>) =
-            changelog().apply { closure.call() }
+    private val changeLogSupplier = ChangeLogSupplier(this, objects, layout, providers)
 
-    fun changelog() = ChangeLogSupplier(this, objects, layout, providers)
+    val changelog: Provider<String>
+        get() = providers.provider(changeLogSupplier)
+
+    fun changelog(@DelegatesTo(MutableChangeLogSupplierConfiguration::class)
+                  closure: Closure<MutableChangeLogSupplierConfiguration>): Provider<String> =
+            providers.provider(changeLogSupplier.apply { closure.call() })
+
+    fun changelog(action: Action<MutableChangeLogSupplierConfiguration>): Provider<String> =
+            providers.provider(changeLogSupplier.also(action::execute))
+
+    fun changelog(block: (MutableChangeLogSupplierConfiguration) -> Unit): Provider<String> =
+            providers.provider(changeLogSupplier.also(block))
 
 }

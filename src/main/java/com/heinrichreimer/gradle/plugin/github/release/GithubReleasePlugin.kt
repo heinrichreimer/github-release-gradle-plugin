@@ -29,6 +29,7 @@
 
 package com.heinrichreimer.gradle.plugin.github.release
 
+import com.heinrichreimer.gradle.plugin.github.release.configuration.UpdateMode
 import com.heinrichreimer.gradle.plugin.github.release.configuration.copyFrom
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -69,22 +70,21 @@ class GithubReleasePlugin : Plugin<Project> {
                     .toString()
                     .substringAfterLast('.')
         }
-        repo {
+        repository {
             project.name
         }
-        tagName {
+        tag {
             "v${project.version}"
         }
-        targetCommitish = "master"
-        releaseNameProvider = tagNameProvider
-        draft = false
-        prerelease = false
+        target = "master"
+        nameProvider = tagProvider
+        isDraft = false
+        isPreRelease = false
         authorization {
             throw IllegalArgumentException("Must specify GitHub authorization token.")
         }
         bodyProvider = changelog
-        overwrite = false
-        allowUploadToExisting = false
+        updateMode = UpdateMode.NONE
     }
 
     private fun Project.registerTask(extension: GithubReleaseExtension) {

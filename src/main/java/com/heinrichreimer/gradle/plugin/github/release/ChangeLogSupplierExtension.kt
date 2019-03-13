@@ -47,10 +47,10 @@ class ChangeLogSupplierExtension(
 
     @get:Internal
     internal val executableProperty: Property<String> = objects.property()
-    override var executableProvider by executableProperty.providerDelegate
-    override var executable by executableProperty.valueDelegate
-    override fun executable(executable: () -> String) {
-        executableProvider = providers.provider { executable() }
+    override var gitExecutableProvider by executableProperty.providerDelegate
+    override var gitExecutable by executableProperty.valueDelegate
+    override fun gitExecutable(gitExecutable: () -> String) {
+        gitExecutableProvider = providers.provider { gitExecutable() }
     }
 
     @get:Internal
@@ -71,9 +71,9 @@ class ChangeLogSupplierExtension(
 
     @get:Internal
     internal val optionsProperty: Property<Iterable<Any>> = objects.property()
-    override var optionsProvider by optionsProperty.providerDelegate
-    override var options by optionsProperty.valueDelegate
-    override fun options(options: () -> Iterable<Any>) {
-        optionsProvider = providers.provider { options() }
+    override var gitOptionsProvider by optionsProperty.providerDelegate
+    override var gitOptions by optionsProperty.valueDelegate
+    override fun gitOptions(gitOptions: () -> Iterable<Any>) {
+        gitOptionsProvider = providers.provider { gitOptions() }
     }
 }

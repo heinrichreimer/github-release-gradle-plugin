@@ -28,18 +28,18 @@ import org.gradle.api.provider.Provider
 
 interface MutableChangeLogSupplierConfiguration : ChangeLogSupplierConfiguration {
 
-    override var executableProvider: Provider<String>
-    override var executable: String
+    override var gitExecutableProvider: Provider<String>
+    override var gitExecutable: String
 
-    fun executable(executable: String) {
-        this.executable = executable
+    fun gitExecutable(gitExecutable: String) {
+        this.gitExecutable = gitExecutable
     }
 
-    fun executable(executable: Provider<String>) {
-        executableProvider = executable
+    fun gitExecutable(gitExecutable: Provider<String>) {
+        gitExecutableProvider = gitExecutable
     }
 
-    fun executable(executable: () -> String)
+    fun gitExecutable(gitExecutable: () -> String)
 
     override var currentCommitProvider: Provider<String>
     override var currentCommit: String
@@ -67,16 +67,16 @@ interface MutableChangeLogSupplierConfiguration : ChangeLogSupplierConfiguration
 
     fun lastCommit(lastCommit: () -> String)
 
-    override var optionsProvider: Provider<Iterable<Any>>
-    override var options: Iterable<Any>
+    override var gitOptionsProvider: Provider<Iterable<Any>>
+    override var gitOptions: Iterable<Any>
 
-    fun options(options: Iterable<Any>) {
-        this.options = options
+    fun gitOptions(gitOptions: Iterable<Any>) {
+        this.gitOptions = gitOptions
     }
 
-    fun options(options: Provider<Iterable<Any>>) {
-        optionsProvider = options
+    fun gitOptions(gitOptions: Provider<Iterable<Any>>) {
+        gitOptionsProvider = gitOptions
     }
 
-    fun options(options: () -> Iterable<Any>)
+    fun gitOptions(gitOptions: () -> Iterable<Any>)
 }

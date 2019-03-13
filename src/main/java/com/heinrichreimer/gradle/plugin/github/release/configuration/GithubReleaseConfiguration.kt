@@ -37,9 +37,9 @@ interface GithubReleaseConfiguration {
     val owner: String
 
     @get:Input
-    val repoProvider: Provider<String>
+    val repositoryProvider: Provider<String>
     @get:Input
-    val repo: String
+    val repository: String
 
     @get:Input
     val authorizationProvider: Provider<String>
@@ -54,19 +54,19 @@ interface GithubReleaseConfiguration {
         get() = authorization
 
     @get:Input
-    val tagNameProvider: Provider<String>
+    val tagProvider: Provider<String>
     @get:Input
-    val tagName: String
+    val tag: String
 
     @get:Input
-    val targetCommitishProvider: Provider<String>
+    val targetProvider: Provider<String>
     @get:Input
-    val targetCommitish: String
+    val target: String
 
     @get:Input
-    val releaseNameProvider: Provider<String>
+    val nameProvider: Provider<String>
     @get:Input
-    val releaseName: String
+    val name: String
 
     @get:Input
     val bodyProvider: Provider<String>
@@ -74,25 +74,20 @@ interface GithubReleaseConfiguration {
     val body: String
 
     @get:Input
-    val draftProvider: Provider<Boolean>
+    val isDraftProvider: Provider<Boolean>
     @get:Input
-    val draft: Boolean
+    val isDraft: Boolean
 
     @get:Input
-    val prereleaseProvider: Provider<Boolean>
+    val isPreReleaseProvider: Provider<Boolean>
     @get:Input
-    val prerelease: Boolean
+    val isPreRelease: Boolean
 
     @get:InputFiles
     val releaseAssets: FileCollection
 
     @get:Input
-    val overwriteProvider: Provider<Boolean>
+    val updateModeProvider: Provider<UpdateMode>
     @get:Input
-    val overwrite: Boolean
-
-    @get:Input
-    val allowUploadToExistingProvider: Provider<Boolean>
-    @get:Input
-    val allowUploadToExisting: Boolean
+    val updateMode: UpdateMode
 }

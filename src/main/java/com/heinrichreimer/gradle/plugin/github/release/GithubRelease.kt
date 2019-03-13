@@ -33,6 +33,7 @@ import com.heinrichreimer.gradle.plugin.github.release.api.GitHubApiService
 import com.heinrichreimer.gradle.plugin.github.release.api.Release
 import com.heinrichreimer.gradle.plugin.github.release.api.ReleaseInput
 import com.heinrichreimer.gradle.plugin.github.release.configuration.GithubReleaseConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.UpdateMode
 import com.heinrichreimer.gradle.plugin.github.release.exception.IllegalNetworkResponseCodeException
 import com.heinrichreimer.gradle.plugin.github.release.exception.RepositoryNotFoundException
 import com.j256.simplemagic.ContentInfoUtil
@@ -57,19 +58,21 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
         when (code) {
             200 -> {
                 log.info("Found existing release.")
-                when {
-                    overwrite -> {
+                when (updateMode) {
+                    UpdateMode.RELEASE -> {
                         log.info("Deleting existing release.")
                         deletePreviousRelease(previousReleaseResponse)
                         val createReleaseResponse = createRelease()
                         uploadAssets(createReleaseResponse)
                     }
-                    allowUploadToExistingProvider.getOrElse(false) -> {
+                    UpdateMode.ASSETS -> {
                         log.info("Assets will be added to existing release.")
                         uploadAssets(previousReleaseResponse)
                     }
-                    else -> throw IllegalStateException("Failed to upload release, release already exists.\n" +
-                            "Set property 'overwrite = true' to replace existing releases on conflict.")
+                    UpdateMode.NONE -> {
+                        throw IllegalStateException("Failed to upload release, release already exists.\n" +
+                                "Set 'updateMode' property to replace existing releases on conflict.")
+                    }
                 }
             }
             404 -> {
@@ -85,8 +88,8 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
         log.debug("Checking for previuos release.")
         return service.getReleaseByTagName(
                 owner = owner.toString(),
-                repo = repo.toString(),
-                tagName = tagName.toString()
+                repo = repository.toString(),
+                tagName = tag.toString()
         ).await()
     }
 
@@ -95,13 +98,13 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
 
         log.info("Deleting previous release.")
         val response = service
-                .deleteRelease(owner.toString(), repo.toString(), body.id)
+                .deleteRelease(owner.toString(), repository.toString(), body.id)
                 .await()
 
         val status = response.code()
         return when (status) {
             204 -> Unit
-            404 -> throw RepositoryNotFoundException(owner.toString(), repo.toString())
+            404 -> throw RepositoryNotFoundException(owner.toString(), repository.toString())
             else -> throw IllegalNetworkResponseCodeException(response)
         }
     }
@@ -109,18 +112,18 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
     private suspend fun createRelease(): Response<Release> {
         log.info("Creating GitHub release.")
         val release = ReleaseInput(
-                tagName.toString(),
-                targetCommitish.toString(),
-                releaseName.toString(),
+                tag.toString(),
+                target.toString(),
+                name.toString(),
                 body.toString(),
-                draft,
-                prerelease
+                isDraft,
+                isPreRelease
         )
 
         val response: Response<Release> = service
                 .createRelease(
                         owner.toString(),
-                        repo.toString(),
+                        repository.toString(),
                         release
                 )
                 .await()
@@ -130,7 +133,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
                 log.info("Created release. Status: ${response.headers()["Status"]}")
                 response
             }
-            404 -> throw RepositoryNotFoundException(owner.toString(), repo.toString())
+            404 -> throw RepositoryNotFoundException(owner.toString(), repository.toString())
             else -> throw IllegalNetworkResponseCodeException(response)
         }
     }

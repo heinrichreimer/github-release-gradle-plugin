@@ -30,9 +30,9 @@ import org.gradle.api.tasks.Input
 interface ChangeLogSupplierConfiguration {
 
     @get:Input
-    val executableProvider: Provider<String>
+    val gitExecutableProvider: Provider<String>
     @get:Input
-    val executable: String
+    val gitExecutable: String
 
     @get:Input
     val currentCommitProvider: Provider<String>
@@ -45,7 +45,7 @@ interface ChangeLogSupplierConfiguration {
     val lastCommit: String
 
     @get:Input
-    val optionsProvider: Provider<Iterable<Any>>
+    val gitOptionsProvider: Provider<Iterable<Any>>
     @get:Input
-    val options: Iterable<Any>
+    val gitOptions: Iterable<Any>
 }

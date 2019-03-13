@@ -73,7 +73,7 @@ object GitHubReleaseFunctionalTest : Spek({
                     version = 'test'
 
                     githubRelease {
-                        repo 'gradle-github-release'
+                        repository 'gradle-github-release'
                         body changelog {}
                     }
 

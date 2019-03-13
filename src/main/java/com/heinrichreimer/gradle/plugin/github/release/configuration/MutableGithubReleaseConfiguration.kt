@@ -42,18 +42,18 @@ interface MutableGithubReleaseConfiguration : GithubReleaseConfiguration {
 
     fun owner(owner: () -> String)
 
-    override var repoProvider: Provider<String>
-    override var repo: String
+    override var repositoryProvider: Provider<String>
+    override var repository: String
 
-    fun repo(repo: String) {
-        this.repo = repo
+    fun repository(repository: String) {
+        this.repository = repository
     }
 
-    fun repo(repo: Provider<String>) {
-        repoProvider = repo
+    fun repository(repository: Provider<String>) {
+        repositoryProvider = repository
     }
 
-    fun repo(repo: () -> String)
+    fun repository(repository: () -> String)
 
     override var authorizationProvider: Provider<String>
     override var authorization: String
@@ -83,44 +83,44 @@ interface MutableGithubReleaseConfiguration : GithubReleaseConfiguration {
     fun token(token: Provider<String>) = authorization(token)
     fun token(token: () -> String) = authorization(token)
 
-    override var tagNameProvider: Provider<String>
-    override var tagName: String
+    override var tagProvider: Provider<String>
+    override var tag: String
 
-    fun tagName(tagName: String) {
-        this.tagName = tagName
+    fun tag(tag: String) {
+        this.tag = tag
     }
 
-    fun tagName(tagName: Provider<String>) {
-        tagNameProvider = tagName
+    fun tag(tag: Provider<String>) {
+        tagProvider = tag
     }
 
-    fun tagName(tagName: () -> String)
+    fun tag(tag: () -> String)
 
-    override var targetCommitishProvider: Provider<String>
-    override var targetCommitish: String
+    override var targetProvider: Provider<String>
+    override var target: String
 
-    fun targetCommitish(targetCommitish: String) {
-        this.targetCommitish = targetCommitish
+    fun target(target: String) {
+        this.target = target
     }
 
-    fun targetCommitish(targetCommitish: Provider<String>) {
-        targetCommitishProvider = targetCommitish
+    fun target(target: Provider<String>) {
+        targetProvider = target
     }
 
-    fun targetCommitish(targetCommitish: () -> String)
+    fun target(target: () -> String)
 
-    override var releaseNameProvider: Provider<String>
-    override var releaseName: String
+    override var nameProvider: Provider<String>
+    override var name: String
 
-    fun releaseName(releaseName: String) {
-        this.releaseName = releaseName
+    fun name(name: String) {
+        this.name = name
     }
 
-    fun releaseName(releaseName: Provider<String>) {
-        releaseNameProvider = releaseName
+    fun name(name: Provider<String>) {
+        nameProvider = name
     }
 
-    fun releaseName(releaseName: () -> String)
+    fun name(name: () -> String)
 
     override var bodyProvider: Provider<String>
     override var body: String
@@ -135,62 +135,56 @@ interface MutableGithubReleaseConfiguration : GithubReleaseConfiguration {
 
     fun body(body: () -> String)
 
-    override var draftProvider: Provider<Boolean>
-    override var draft: Boolean
+    override var isDraftProvider: Provider<Boolean>
+    override var isDraft: Boolean
 
-    fun draft(draft: Boolean) {
-        this.draft = draft
+    fun isDraft(isDraft: Boolean) {
+        this.isDraft = isDraft
     }
 
-    fun draft(draft: Provider<Boolean>) {
-        draftProvider = draft
+    fun isDraft(isDraft: Provider<Boolean>) {
+        isDraftProvider = isDraft
     }
 
-    fun draft(draft: () -> Boolean)
+    fun isDraft(isDraft: () -> Boolean)
 
-    override var prereleaseProvider: Provider<Boolean>
-    override var prerelease: Boolean
+    override var isPreReleaseProvider: Provider<Boolean>
+    override var isPreRelease: Boolean
 
-    fun prerelease(prerelease: Boolean) {
-        this.prerelease = prerelease
+    fun isPreRelease(isPreRelease: Boolean) {
+        this.isPreRelease = isPreRelease
     }
 
-    fun prerelease(prerelease: Provider<Boolean>) {
-        prereleaseProvider = prerelease
+    fun isPreRelease(isPreRelease: Provider<Boolean>) {
+        isPreReleaseProvider = isPreRelease
     }
 
-    fun prerelease(prerelease: () -> Boolean)
+    fun isPreRelease(isPreRelease: () -> Boolean)
 
     override var releaseAssets: FileCollection
 
-    fun releaseAssets(releaseAssets: FileCollection) {
-        this.releaseAssets = releaseAssets
+    /**
+     * @param releaseAssetPaths The release asset paths, evaluated as per [org.gradle.api.Project.files].
+     */
+    fun releaseAssets(releaseAssetPaths: Iterable<*>)
+
+    /**
+     * @param releaseAssetPaths The release asset paths, evaluated as per [org.gradle.api.Project.files].
+     */
+    fun releaseAssets(vararg releaseAssetPaths: Any)
+
+    override var updateModeProvider: Provider<UpdateMode>
+    override var updateMode: UpdateMode
+
+    fun updateMode(updateMode: UpdateMode) {
+        this.updateMode = updateMode
     }
 
-    override var overwriteProvider: Provider<Boolean>
-    override var overwrite: Boolean
-
-    fun overwrite(overwrite: Boolean) {
-        this.overwrite = overwrite
+    fun updateMode(updateMode: Provider<UpdateMode>) {
+        updateModeProvider = updateMode
     }
 
-    fun overwrite(overwrite: Provider<Boolean>) {
-        overwriteProvider = overwrite
-    }
+    fun updateMode(updateMode: () -> UpdateMode)
 
-    fun overwrite(overwrite: () -> Boolean)
-
-    override var allowUploadToExistingProvider: Provider<Boolean>
-    override var allowUploadToExisting: Boolean
-
-    fun allowUploadToExisting(allowUploadToExisting: Boolean) {
-        this.allowUploadToExisting = allowUploadToExisting
-    }
-
-    fun allowUploadToExisting(allowUploadToExisting: Provider<Boolean>) {
-        allowUploadToExistingProvider = allowUploadToExisting
-    }
-
-    fun allowUploadToExisting(allowUploadToExisting: () -> Boolean)
 
 }

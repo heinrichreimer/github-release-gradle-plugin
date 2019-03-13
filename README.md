@@ -65,7 +65,7 @@ githubRelease {
     repo "github-release" // by default this is set to your project name
     tagName "v1.0.0" // by default this is set to "v${project.version}"
     targetCommitish "master" // by default this is set to "master"
-    releaseName "v1.0.0" // Release title, by default this is the same as the tagName
+    releaseName "v1.0.0" tag
     body "Wham, bam! Thank you clam!" // by default this is a list of commits from the current commit to the last commit associated with a github release
     draft false // by default this is false
     prerelease false // by default this is false

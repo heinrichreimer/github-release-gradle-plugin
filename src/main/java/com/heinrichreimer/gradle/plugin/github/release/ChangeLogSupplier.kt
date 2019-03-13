@@ -69,14 +69,14 @@ class ChangeLogSupplier(
     private val service = GitHubApiService(authorizationProvider)
 
     init {
-        executable = "git"
+        gitExecutable = "git"
         currentCommit = "HEAD"
         lastCommit {
             runBlocking {
                 getLastReleaseCommit()
             }
         }
-        options = listOf("--format=oneline", "--abbrev-commit", "--max-count=50")
+        gitOptions = listOf("--format=oneline", "--abbrev-commit", "--max-count=50")
     }
 
     /**
@@ -84,7 +84,7 @@ class ChangeLogSupplier(
      */
     private suspend fun getLastReleaseCommit(): String {
         val owner = owner
-        val repo = repo
+        val repo = repository
 
 
         // query the github api for releases
@@ -99,9 +99,9 @@ class ChangeLogSupplier(
         val releases = response.body() ?: return ""
 
         // find current release if exists
-        val index = releases.indexOfFirst { release -> release.tag_name == tagName }
+        val index = releases.indexOfFirst { release -> release.tag_name == tag }
         if (releases.isEmpty()) {
-            val cmd = listOf(executable.toString(), "rev-list", "--max-parents=0", "--max-count=1", "HEAD")
+            val cmd = listOf(gitExecutable.toString(), "rev-list", "--max-parents=0", "--max-count=1", "HEAD")
 
             return executeAndGetOutput(cmd).trim()
         } else {
@@ -129,8 +129,8 @@ class ChangeLogSupplier(
 
     fun call(): String {
         log.info("Generating release body using commit history.")
-        val opts = options.map { it.toString() }.toTypedArray()
-        val cmds = listOf(executable.toString(), "rev-list", *opts, "$lastCommit..$currentCommit", "--")
+        val opts = gitOptions.map { it.toString() }.toTypedArray()
+        val cmds = listOf(gitExecutable.toString(), "rev-list", *opts, "$lastCommit..$currentCommit", "--")
         try {
             return executeAndGetOutput(cmds)
         } catch (e: IOException) {

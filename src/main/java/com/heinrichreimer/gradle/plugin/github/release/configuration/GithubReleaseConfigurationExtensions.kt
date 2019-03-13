@@ -26,17 +26,16 @@ package com.heinrichreimer.gradle.plugin.github.release.configuration
 
 fun GithubReleaseConfiguration.copyTo(configuration: MutableGithubReleaseConfiguration) {
     configuration.ownerProvider = ownerProvider
-    configuration.repoProvider = repoProvider
+    configuration.repositoryProvider = repositoryProvider
     configuration.authorizationProvider = authorizationProvider
-    configuration.tagNameProvider = tagNameProvider
-    configuration.targetCommitishProvider = targetCommitishProvider
-    configuration.releaseNameProvider = releaseNameProvider
+    configuration.tagProvider = tagProvider
+    configuration.targetProvider = targetProvider
+    configuration.nameProvider = nameProvider
     configuration.bodyProvider = bodyProvider
-    configuration.draftProvider = draftProvider
-    configuration.prereleaseProvider = prereleaseProvider
+    configuration.isDraftProvider = isDraftProvider
+    configuration.isPreReleaseProvider = isPreReleaseProvider
     configuration.releaseAssets = releaseAssets
-    configuration.overwriteProvider = overwriteProvider
-    configuration.allowUploadToExistingProvider = allowUploadToExistingProvider
+    configuration.updateModeProvider = updateModeProvider
 }
 
 fun MutableGithubReleaseConfiguration.copyFrom(configuration: GithubReleaseConfiguration) =

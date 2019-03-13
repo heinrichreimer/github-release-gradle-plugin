@@ -50,7 +50,7 @@ object GitHubReleaseUnitTest : Spek({
                             .trim()
                     lastCommit
                 }
-                options {
+                gitOptions {
                     listOf("--format=oneline", "--abbrev-commit", "--max-count=50", "--graph")
                 }
 

@@ -9,36 +9,36 @@ import retrofit2.http.*
 
 interface GitHubService {
 
-    @GET("repos/{owner}/{repo}/releases")
+    @GET("repos/{owner}/{repository}/releases")
     fun getReleases(
             @Path("owner") owner: String,
-            @Path("repo") repo: String
+            @Path("repository") repo: String
     ): Deferred<Response<List<Release>>>
 
-    @GET("repos/{owner}/{repo}/releases/tags/{tagName}")
+    @GET("repos/{owner}/{repository}/releases/tags/{tag}")
     fun getReleaseByTagName(
             @Path("owner") owner: String,
-            @Path("repo") repo: String,
-            @Path("tagName") tagName: String
+            @Path("repository") repo: String,
+            @Path("tag") tagName: String
     ): Deferred<Response<Release>>
 
-    @GET("repos/{owner}/{repo}/releases/latest")
+    @GET("repos/{owner}/{repository}/releases/latest")
     fun getLastRelease(
             @Path("owner") owner: String,
-            @Path("repo") repo: String
+            @Path("repository") repo: String
     ): Deferred<Response<Release>>
 
-    @POST("repos/{owner}/{repo}/releases")
+    @POST("repos/{owner}/{repository}/releases")
     fun createRelease(
             @Path("owner") owner: String,
-            @Path("repo") repo: String,
+            @Path("repository") repo: String,
             @Body release: ReleaseInput
     ): Deferred<Response<Release>>
 
-    @DELETE("repos/{owner}/{repo}/releases/{release_id}")
+    @DELETE("repos/{owner}/{repository}/releases/{release_id}")
     fun deleteRelease(
             @Path("owner") owner: String,
-            @Path("repo") repo: String,
+            @Path("repository") repo: String,
             @Path("release_id") releaseId: Int
     ): Deferred<Response<ResponseBody>>
 
@@ -50,10 +50,10 @@ interface GitHubService {
             @Query("label") label: String? = null
     ): Deferred<Response<Release.Asset>>
 
-    @GET("repos/{owner}/{repo}/git/refs/tags/{tagName}")
+    @GET("repos/{owner}/{repository}/git/refs/tags/{tag}")
     fun getGitReferenceByTagName(
             @Path("owner") owner: String,
-            @Path("repo") repo: String,
-            @Path("tagName") tagName: String
+            @Path("repository") repo: String,
+            @Path("tag") tagName: String
     ): Deferred<Response<GitReference>>
 }

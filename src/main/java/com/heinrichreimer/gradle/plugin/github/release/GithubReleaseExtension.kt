@@ -31,6 +31,7 @@ package com.heinrichreimer.gradle.plugin.github.release
 
 import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangeLogSupplierConfiguration
 import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableGithubReleaseConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.UpdateMode
 import com.heinrichreimer.gradle.plugin.github.release.util.collectionDelegate
 import com.heinrichreimer.gradle.plugin.github.release.util.property
 import com.heinrichreimer.gradle.plugin.github.release.util.providerDelegate
@@ -62,20 +63,20 @@ import org.gradle.api.tasks.Internal
  *                 part after last period</td>
  *         </tr>
  *         <tr>
- *             <td>repo</td>
+ *             <td>repository</td>
  *             <td>project.name ||<br />
  *                 rootProject.name</td>
  *         </tr>
  *         <tr>
- *             <td>tagName</td>
+ *             <td>tag</td>
  *             <td>'v' + project.version</td>
  *         </tr>
  *         <tr>
- *             <td>targetCommitish</td>
+ *             <td>target</td>
  *             <td>'master'</td>
  *         </tr>
  *         <tr>
- *             <td>releaseName</td>
+ *             <td>name</td>
  *             <td>'v' + project.version</td>
  *         </tr>
  *         <tr>
@@ -83,11 +84,11 @@ import org.gradle.api.tasks.Internal
  *             <td>list of commits since last release</td>
  *         </tr>
  *         <tr>
- *             <td>draft</td>
+ *             <td>isDraft</td>
  *             <td>false</td>
  *         </tr>
  *         <tr>
- *             <td>prerelease</td>
+ *             <td>isPreRelease</td>
  *             <td>false</td>
  *         </tr>
  *         <tr>
@@ -95,7 +96,7 @@ import org.gradle.api.tasks.Internal
  *             <td>N/A</td>
  *         </tr>
  *         <tr>
- *             <td>overwrite</td>
+ *             <td>updateMode</td>
  *             <td>false</td>
  *         </tr>
  *         <tr>
@@ -129,10 +130,10 @@ class GithubReleaseExtension(
 
     @get:Internal
     internal val repoProperty: Property<String> = objects.property()
-    override var repoProvider by repoProperty.providerDelegate
-    override var repo by repoProperty.valueDelegate
-    override fun repo(repo: () -> String) {
-        repoProvider = providers.provider { repo() }
+    override var repositoryProvider by repoProperty.providerDelegate
+    override var repository by repoProperty.valueDelegate
+    override fun repository(repository: () -> String) {
+        repositoryProvider = providers.provider { repository() }
     }
 
     @get:Internal
@@ -145,26 +146,26 @@ class GithubReleaseExtension(
 
     @get:Internal
     internal val tagNameProperty: Property<String> = objects.property()
-    override var tagNameProvider by tagNameProperty.providerDelegate
-    override var tagName by tagNameProperty.valueDelegate
-    override fun tagName(tagName: () -> String) {
-        tagNameProvider = providers.provider { tagName() }
+    override var tagProvider by tagNameProperty.providerDelegate
+    override var tag by tagNameProperty.valueDelegate
+    override fun tag(tag: () -> String) {
+        tagProvider = providers.provider { tag() }
     }
 
     @get:Internal
     internal val targetCommitishProperty: Property<String> = objects.property()
-    override var targetCommitishProvider by targetCommitishProperty.providerDelegate
-    override var targetCommitish by targetCommitishProperty.valueDelegate
-    override fun targetCommitish(targetCommitish: () -> String) {
-        targetCommitishProvider = providers.provider { targetCommitish() }
+    override var targetProvider by targetCommitishProperty.providerDelegate
+    override var target by targetCommitishProperty.valueDelegate
+    override fun target(target: () -> String) {
+        targetProvider = providers.provider { target() }
     }
 
     @get:Internal
     internal val releaseNameProperty: Property<String> = objects.property()
-    override var releaseNameProvider by releaseNameProperty.providerDelegate
-    override var releaseName by releaseNameProperty.valueDelegate
-    override fun releaseName(releaseName: () -> String) {
-        releaseNameProvider = providers.provider { releaseName() }
+    override var nameProvider by releaseNameProperty.providerDelegate
+    override var name by releaseNameProperty.valueDelegate
+    override fun name(name: () -> String) {
+        nameProvider = providers.provider { name() }
     }
 
     @get:Internal
@@ -177,38 +178,36 @@ class GithubReleaseExtension(
 
     @get:Internal
     internal val draftProperty: Property<Boolean> = objects.property()
-    override var draftProvider by draftProperty.providerDelegate
-    override var draft by draftProperty.valueDelegate
-    override fun draft(draft: () -> Boolean) {
-        draftProvider = providers.provider { draft() }
+    override var isDraftProvider by draftProperty.providerDelegate
+    override var isDraft by draftProperty.valueDelegate
+    override fun isDraft(isDraft: () -> Boolean) {
+        isDraftProvider = providers.provider { isDraft() }
     }
 
     @get:Internal
     internal val prereleaseProperty: Property<Boolean> = objects.property()
-    override var prereleaseProvider by prereleaseProperty.providerDelegate
-    override var prerelease by prereleaseProperty.valueDelegate
-    override fun prerelease(prerelease: () -> Boolean) {
-        prereleaseProvider = providers.provider { prerelease() }
+    override var isPreReleaseProvider by prereleaseProperty.providerDelegate
+    override var isPreRelease by prereleaseProperty.valueDelegate
+    override fun isPreRelease(isPreRelease: () -> Boolean) {
+        isPreReleaseProvider = providers.provider { isPreRelease() }
     }
 
     @get:Internal
     internal val releaseAssetsFileCollection: ConfigurableFileCollection = layout.configurableFiles()
     override var releaseAssets by releaseAssetsFileCollection.collectionDelegate
 
-    @get:Internal
-    internal val overwriteProperty: Property<Boolean> = objects.property()
-    override var overwriteProvider by overwriteProperty.providerDelegate
-    override var overwrite by overwriteProperty.valueDelegate
-    override fun overwrite(overwrite: () -> Boolean) {
-        overwriteProvider = providers.provider { overwrite() }
-    }
+    override fun releaseAssets(releaseAssetPaths: Iterable<*>) =
+            releaseAssetsFileCollection.setFrom(releaseAssetPaths)
+
+    override fun releaseAssets(vararg releaseAssetPaths: Any) =
+            releaseAssetsFileCollection.setFrom(releaseAssetPaths)
 
     @get:Internal
-    internal val allowUploadToExistingProperty: Property<Boolean> = objects.property()
-    override var allowUploadToExistingProvider by allowUploadToExistingProperty.providerDelegate
-    override var allowUploadToExisting by allowUploadToExistingProperty.valueDelegate
-    override fun allowUploadToExisting(allowUploadToExisting: () -> Boolean) {
-        allowUploadToExistingProvider = providers.provider { allowUploadToExisting() }
+    internal val overwriteProperty: Property<UpdateMode> = objects.property()
+    override var updateModeProvider by overwriteProperty.providerDelegate
+    override var updateMode by overwriteProperty.valueDelegate
+    override fun updateMode(updateMode: () -> UpdateMode) {
+        updateModeProvider = providers.provider { updateMode() }
     }
 
     private val changeLogSupplier = ChangeLogSupplier(this, objects, layout, providers)

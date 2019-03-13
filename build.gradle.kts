@@ -39,6 +39,7 @@ dependencies {
     implementation("org.kohsuke:github-api:1.95")
     implementation("com.j256.simplemagic:simplemagic:1.10")
     implementation("com.gradle.publish:plugin-publish-plugin:0.9.7")
+    implementation("org.zeroturnaround:zt-exec:1.10")
 
 //    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
 //        exclude(group = "org.codehaus.groovy")

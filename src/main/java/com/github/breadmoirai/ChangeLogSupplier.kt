@@ -24,7 +24,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import java.io.ByteArrayOutputStream
+import org.zeroturnaround.exec.ProcessExecutor
 import java.io.IOException
 import java.util.concurrent.Callable
 
@@ -76,7 +76,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
             val exe = this.executable.get()
             val cmd = listOf(exe.toString(), "rev-list", "--max-parents=0", "--max-count=1", "HEAD")
 
-            return project.executeAndGetOutput(cmd).trim()
+            return executeAndGetOutput(cmd).trim()
         } else {
             // get the next release before the current release
             // if current release does not ezist, then gets the most recent release
@@ -98,13 +98,14 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
 
     }
 
-    private fun Project.executeAndGetOutput(commands: Iterable<Any>): String {
-        val stdOut = ByteArrayOutputStream()
-        exec {
-            it.commandLine(commands)
-            it.standardOutput = stdOut;
-        }.assertNormalExitValue()
-        return stdOut.toString()
+    private fun executeAndGetOutput(commands: Iterable<Any>): String {
+        return ProcessExecutor()
+                .directory(project.layout.projectDirectory.asFile)
+                .command(commands.map { it.toString()})
+                .readOutput(true)
+                .exitValueNormal()
+                .execute()
+                .outputUTF8()
     }
 
     override fun call(): String {
@@ -115,7 +116,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
         val get = executable.get().toString()
         val cmds = listOf(get, "rev-list", *opts, "$last..$current", "--")
         try {
-            return project.executeAndGetOutput(cmds)
+            return executeAndGetOutput(cmds)
         } catch (e: IOException) {
             if (e.cause != null && e.cause?.message?.contains("CreateProcess error=2") == true) {
                 throw  Error("Failed to run git executable to find commit history. " +

@@ -87,7 +87,7 @@ class ChangelogSupplier(
         val releases = response.body() ?: return ""
 
         // find current release if exists
-        val index = releases.indexOfFirst { release -> release.tag_name == tag }
+        val index = releases.indexOfFirst { release -> release.tag == tag }
         if (releases.isEmpty()) {
             val cmd = listOf(gitExecutable, "rev-list", "--max-parents=0", "--max-count=1", "HEAD")
 
@@ -96,12 +96,12 @@ class ChangelogSupplier(
             // get the next release before the current release
             // if current release does not ezist, then gets the most recent release
             val lastRelease = releases[index + 1]
-            val lastTag = lastRelease.tag_name
+            val lastTag = lastRelease.tag
 
             val tagResponse = service.getGitReferenceByTagNameAsync(owner, repo, lastTag)
                     .await()
 
-            return tagResponse.body()?.referenced_object?.sha ?: ""
+            return tagResponse.body()?.referencedObject?.sha ?: ""
         }
     }
 

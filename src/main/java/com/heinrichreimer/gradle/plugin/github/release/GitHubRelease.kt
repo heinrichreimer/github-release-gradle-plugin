@@ -30,8 +30,8 @@
 package com.heinrichreimer.gradle.plugin.github.release
 
 import com.heinrichreimer.gradle.plugin.github.release.api.GitHubApiService
-import com.heinrichreimer.gradle.plugin.github.release.api.Release
-import com.heinrichreimer.gradle.plugin.github.release.api.ReleaseInput
+import com.heinrichreimer.gradle.plugin.github.release.api.model.Release
+import com.heinrichreimer.gradle.plugin.github.release.api.model.ReleaseInput
 import com.heinrichreimer.gradle.plugin.github.release.configuration.GitHubReleaseConfiguration
 import com.heinrichreimer.gradle.plugin.github.release.configuration.UpdateMode
 import com.heinrichreimer.gradle.plugin.github.release.exception.IllegalNetworkResponseCodeException
@@ -148,20 +148,19 @@ class GitHubRelease(configuration: GitHubReleaseConfiguration) : GitHubReleaseCo
         val contentInfoUtil = ContentInfoUtil()
         return assets
                 .map { asset ->
-            log.debug("Uploading asset '${asset.name}'")
-            val type = contentInfoUtil
-                    .findMatch(asset)
-                    ?.let { info ->
-                        MediaType.parse(info.mimeType)
+                    log.debug("Uploading asset '${asset.name}'")
+                    val type = contentInfoUtil
+                            .findMatch(asset)
+                            ?.let { info ->
+                                MediaType.parse(info.mimeType)
+                            }
+                    if (type == null) {
+                        log.warn("Could not guess media type for file '${asset.name}'")
                     }
-            if (type == null) {
-                log.warn("Could not guess media type for file '${asset.name}'")
-            }
-            val uploadUrl = body.upload_url
-            val assetBody: RequestBody = RequestBody.create(type, asset)
+                    val assetBody: RequestBody = RequestBody.create(type, asset)
 
-                    service.uploadReleaseAssetAsync(uploadUrl, assetBody, asset.name)
-        }
+                    service.uploadReleaseAssetAsync(body.uploadUrl, assetBody, asset.name)
+                }
                 .awaitAll()
     }
 

@@ -1,5 +1,8 @@
 package com.heinrichreimer.gradle.plugin.github.release.api
 
+import com.heinrichreimer.gradle.plugin.github.release.api.model.GitReference
+import com.heinrichreimer.gradle.plugin.github.release.api.model.Release
+import com.heinrichreimer.gradle.plugin.github.release.api.model.ReleaseInput
 import kotlinx.coroutines.Deferred
 import okhttp3.HttpUrl
 import okhttp3.RequestBody

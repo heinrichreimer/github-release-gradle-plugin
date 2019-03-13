@@ -1,9 +1,10 @@
 package com.github.breadmoirai.api
 
+import kotlinx.coroutines.Deferred
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
 
 interface GitHubService {
@@ -12,34 +13,34 @@ interface GitHubService {
     fun getReleases(
             @Path("owner") owner: String,
             @Path("repo") repo: String
-    ): Call<List<Release>>
+    ): Deferred<Response<List<Release>>>
 
     @GET("repos/{owner}/{repo}/releases/tags/{tagName}")
     fun getReleaseByTagName(
             @Path("owner") owner: String,
             @Path("repo") repo: String,
             @Path("tagName") tagName: String
-    ): Call<Release>
+    ): Deferred<Response<Release>>
 
     @GET("repos/{owner}/{repo}/releases/latest")
     fun getLastRelease(
             @Path("owner") owner: String,
             @Path("repo") repo: String
-    ): Call<Release>
+    ): Deferred<Response<Release>>
 
     @POST("repos/{owner}/{repo}/releases")
     fun createRelease(
             @Path("owner") owner: String,
             @Path("repo") repo: String,
             @Body release: ReleaseInput
-    ): Call<Release>
+    ): Deferred<Response<Release>>
 
     @DELETE("repos/{owner}/{repo}/releases/{release_id}")
     fun deleteRelease(
             @Path("owner") owner: String,
             @Path("repo") repo: String,
             @Path("release_id") releaseId: Int
-    ): Call<ResponseBody>
+    ): Deferred<Response<ResponseBody>>
 
     @POST
     fun uploadReleaseAsset(
@@ -47,12 +48,12 @@ interface GitHubService {
             @Body release: RequestBody,
             @Query("name") name: String,
             @Query("label") label: String? = null
-    ): Call<Release.Asset>
+    ): Deferred<Response<Release.Asset>>
 
     @GET("repos/{owner}/{repo}/git/refs/tags/{tagName}")
     fun getGitReferenceByTagName(
             @Path("owner") owner: String,
             @Path("repo") repo: String,
             @Path("tagName") tagName: String
-    ): Call<GitReference>
+    ): Deferred<Response<GitReference>>
 }

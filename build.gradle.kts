@@ -47,6 +47,9 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.8.0")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.8.0")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
+
 //    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
 //        exclude(group = "org.codehaus.groovy")
 //    }

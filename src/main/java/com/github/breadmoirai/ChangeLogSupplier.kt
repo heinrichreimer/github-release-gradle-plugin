@@ -32,6 +32,7 @@ package com.github.breadmoirai
 import com.github.breadmoirai.api.GitHubApiService
 import com.github.breadmoirai.configuration.GithubReleaseConfiguration
 import com.github.breadmoirai.configuration.MutableChangeLogSupplierConfiguration
+import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.logging.Logger
@@ -72,14 +73,18 @@ class ChangeLogSupplier(
     init {
         executable = "git"
         currentCommit = "HEAD"
-        lastCommit { getLastReleaseCommit() }
+        lastCommit {
+            runBlocking {
+                getLastReleaseCommit()
+            }
+        }
         options = listOf("--format=oneline", "--abbrev-commit", "--max-count=50")
     }
 
     /**
      * Looks for the previous release's target commit.
      */
-    private fun getLastReleaseCommit(): CharSequence {
+    private suspend fun getLastReleaseCommit(): CharSequence {
         val owner = owner
         val repo = repo
 
@@ -88,7 +93,7 @@ class ChangeLogSupplier(
         val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases"
         val response = service
                 .getReleases(owner.toString(), repo.toString())
-                .execute()
+                .await()
 
         if (response.code() != 200) {
             return ""
@@ -109,7 +114,7 @@ class ChangeLogSupplier(
             val lastTag = lastRelease.tag_name
 
             val tagResponse = service.getGitReferenceByTagName(owner.toString(), repo.toString(), lastTag)
-                    .execute()
+                    .await()
 
             return tagResponse.body()?.referenced_object?.sha ?: ""
         }

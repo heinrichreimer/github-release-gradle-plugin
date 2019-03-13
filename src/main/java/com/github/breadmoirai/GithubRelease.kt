@@ -36,13 +36,14 @@ import com.github.breadmoirai.configuration.GithubReleaseConfiguration
 import com.github.breadmoirai.exception.IllegalNetworkResponseCodeException
 import com.github.breadmoirai.exception.RepositoryNotFoundException
 import com.j256.simplemagic.ContentInfoUtil
+import kotlinx.coroutines.awaitAll
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import retrofit2.Response
 
-class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, GithubReleaseConfiguration by configuration {
+class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseConfiguration by configuration {
 
     companion object {
         private val log: Logger = Logging.getLogger(GithubRelease::class.java)
@@ -50,7 +51,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
 
     private val service = GitHubApiService(authorizationProvider)
 
-    override fun run() {
+    suspend fun run() {
         val previousReleaseResponse = checkForPreviousRelease()
         val code = previousReleaseResponse.code()
         when (code) {
@@ -80,22 +81,22 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
     }
 
 
-    private fun checkForPreviousRelease(): Response<Release> {
+    private suspend fun checkForPreviousRelease(): Response<Release> {
         log.debug("Checking for previuos release.")
         return service.getReleaseByTagName(
                 owner = owner.toString(),
                 repo = repo.toString(),
                 tagName = tagName.toString()
-        ).execute()
+        ).await()
     }
 
-    private fun deletePreviousRelease(previous: Response<Release>) {
+    private suspend fun deletePreviousRelease(previous: Response<Release>) {
         val body = previous.body() ?: return
 
         log.info("Deleting previous release.")
         val response = service
                 .deleteRelease(owner.toString(), repo.toString(), body.id)
-                .execute()
+                .await()
 
         val status = response.code()
         return when (status) {
@@ -105,7 +106,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
         }
     }
 
-    private fun createRelease(): Response<Release> {
+    private suspend fun createRelease(): Response<Release> {
         log.info("Creating GitHub release.")
         val release = ReleaseInput(
                 tagName.toString(),
@@ -122,7 +123,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
                         repo.toString(),
                         release
                 )
-                .execute()
+                .await()
         val code = response.code()
         return when (code) {
             201 -> {
@@ -139,7 +140,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
      * @param response this response should reference the release that the assets will be uploaded to
      * @return a list of responses from uploaded each asset
      */
-    private fun uploadAssets(response: Response<Release>): List<Response<Release.Asset>> {
+    private suspend fun uploadAssets(response: Response<Release>): List<Response<Release.Asset>> {
         val assets = releaseAssets.files
         if (assets.isEmpty()) {
             log.debug("Skip uploading release assets, no assets found.")
@@ -150,7 +151,8 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
 
         log.info("Uploading release assets.")
         val contentInfoUtil = ContentInfoUtil()
-        return assets.map { asset ->
+        return assets
+                .map { asset ->
             log.debug("Uploading asset '${asset.name}'")
             val type = contentInfoUtil
                     .findMatch(asset)
@@ -164,8 +166,8 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
             val assetBody: RequestBody = RequestBody.create(type, asset)
 
             service.uploadReleaseAsset(uploadUrl, assetBody, asset.name)
-                    .execute()
         }
+                .awaitAll()
     }
 
 }

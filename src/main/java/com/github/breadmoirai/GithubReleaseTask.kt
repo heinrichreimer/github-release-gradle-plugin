@@ -30,6 +30,7 @@
 package com.github.breadmoirai
 
 import com.github.breadmoirai.configuration.MutableGithubReleaseConfiguration
+import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
@@ -49,7 +50,7 @@ class GithubReleaseTask @Inject constructor(
     }
 
     @TaskAction
-    fun publishRelease() {
-        GithubRelease(this).run()
+    fun publishRelease() = runBlocking {
+        GithubRelease(this@GithubReleaseTask).run()
     }
 }

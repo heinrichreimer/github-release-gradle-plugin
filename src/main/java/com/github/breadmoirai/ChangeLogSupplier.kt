@@ -82,7 +82,6 @@ class ChangeLogSupplier(
     private fun getLastReleaseCommit(): CharSequence {
         val owner = owner
         val repo = repo
-        val tag = tagName
 
         // query the github api for releases
         val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases"
@@ -97,10 +96,9 @@ class ChangeLogSupplier(
         }
         val releases: List<Any> = JsonSlurper().parse(response.body()?.bytes()) as List<Any>
         // find current release if exists
-        val index = releases.indexOfFirst { release -> (release as Map<String, Any>)["tag_name"] == tag }
+        val index = releases.indexOfFirst { release -> (release as Map<String, Any>)["tag_name"] == tagName }
         if (releases.isEmpty()) {
-            val exe = executable
-            val cmd = listOf(exe.toString(), "rev-list", "--max-parents=0", "--max-count=1", "HEAD")
+            val cmd = listOf(executable.toString(), "rev-list", "--max-parents=0", "--max-count=1", "HEAD")
 
             return executeAndGetOutput(cmd).trim()
         } else {
@@ -136,11 +134,8 @@ class ChangeLogSupplier(
 
     override fun call(): String {
         log.info("Generating release body using commit history.")
-        val current = currentCommit
-        val last = lastCommit
         val opts = options.map { it.toString() }.toTypedArray()
-        val get = executable.toString()
-        val cmds = listOf(get, "rev-list", *opts, "$last..$current", "--")
+        val cmds = listOf(executable.toString(), "rev-list", *opts, "$lastCommit..$currentCommit", "--")
         try {
             return executeAndGetOutput(cmds)
         } catch (e: IOException) {

@@ -41,22 +41,38 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.Provider
 
-class GithubRelease(
-        private val owner: Provider<CharSequence>,
-        private val repo: Provider<CharSequence>,
-        authorization: Provider<CharSequence>,
-        private val tagName: Provider<CharSequence>,
-        private val targetCommitish: Provider<CharSequence>,
-        private val releaseName: Provider<CharSequence>,
-        private val body: Provider<CharSequence>,
-        private val draft: Provider<Boolean>,
-        private val prerelease: Provider<Boolean>,
-        private val releaseAssets: FileCollection,
-        private val overwrite: Provider<Boolean>,
-        private val allowUploadToExisting: Provider<Boolean>
-) : Runnable {
+class GithubRelease : Runnable {
 
-    private val authorization = authorization.map { "Token $it" as CharSequence }
+    private val owner: Provider<CharSequence>
+    private val repo: Provider<CharSequence>
+    private val tagName: Provider<CharSequence>
+    private val targetCommitish: Provider<CharSequence>
+    private val releaseName: Provider<CharSequence>
+    private val body: Provider<CharSequence>
+    private val draft: Provider<Boolean>
+    private val prerelease: Provider<Boolean>
+    private val releaseAssets: FileCollection
+    private val overwrite: Provider<Boolean>
+    private val allowUploadToExisting: Provider<Boolean>
+
+    constructor(owner: Provider<CharSequence>, repo: Provider<CharSequence>, authorization: Provider<CharSequence>, tagName: Provider<CharSequence>, targetCommitish: Provider<CharSequence>, releaseName: Provider<CharSequence>, body: Provider<CharSequence>, draft: Provider<Boolean>, prerelease: Provider<Boolean>, releaseAssets: FileCollection, overwrite: Provider<Boolean>, allowUploadToExisting: Provider<Boolean>) {
+        this.owner = owner
+        this.repo = repo
+        this.tagName = tagName
+        this.targetCommitish = targetCommitish
+        this.releaseName = releaseName
+        this.body = body
+        this.draft = draft
+        this.prerelease = prerelease
+        this.releaseAssets = releaseAssets
+        this.overwrite = overwrite
+        this.allowUploadToExisting = allowUploadToExisting
+        this.authorization = authorization.map { "Token $it" as CharSequence }
+        this.client = OkHttpClient()
+        this.slurper = JsonSlurper()
+    }
+
+    private val authorization: Provider<CharSequence>
 
     constructor(configuration: GithubReleaseConfiguration) : this(
             owner = configuration.ownerProvider,
@@ -86,8 +102,8 @@ class GithubRelease(
         }
     }
 
-    private val client: OkHttpClient = OkHttpClient()
-    private val slurper: JsonSlurper = JsonSlurper()
+    private val client: OkHttpClient
+    private val slurper: JsonSlurper
 
     override fun run() {
         val previousReleaseResponse = checkForPreviousRelease()

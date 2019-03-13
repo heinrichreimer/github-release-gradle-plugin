@@ -29,11 +29,9 @@
 
 package com.github.breadmoirai
 
+import com.github.breadmoirai.api.GitHubApiService
 import com.github.breadmoirai.configuration.GithubReleaseConfiguration
 import com.github.breadmoirai.configuration.MutableChangeLogSupplierConfiguration
-import groovy.json.JsonSlurper
-import okhttp3.OkHttpClient
-import okhttp3.Response
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.logging.Logger
@@ -69,6 +67,8 @@ class ChangeLogSupplier(
         private val log: Logger = Logging.getLogger(ChangeLogSupplier::class.java)
     }
 
+    private val service = GitHubApiService(authorizationProvider)
+
     init {
         executable = "git"
         currentCommit = "HEAD"
@@ -83,20 +83,21 @@ class ChangeLogSupplier(
         val owner = owner
         val repo = repo
 
+
         // query the github api for releases
         val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases"
-        val response: Response = OkHttpClient()
-                .newCall(GithubRelease.createRequestWithHeaders(authorizationProvider)
-                        .url(releaseUrl)
-                        .get()
-                        .build()
-                ).execute()
+        val response = service
+                .getReleases(owner.toString(), repo.toString())
+                .execute()
+
         if (response.code() != 200) {
             return ""
         }
-        val releases: List<Any> = JsonSlurper().parse(response.body()?.bytes()) as List<Any>
+
+        val releases = response.body() ?: return ""
+
         // find current release if exists
-        val index = releases.indexOfFirst { release -> (release as Map<String, Any>)["tag_name"] == tagName }
+        val index = releases.indexOfFirst { release -> release.tag_name == tagName }
         if (releases.isEmpty()) {
             val cmd = listOf(executable.toString(), "rev-list", "--max-parents=0", "--max-count=1", "HEAD")
 
@@ -104,22 +105,14 @@ class ChangeLogSupplier(
         } else {
             // get the next release before the current release
             // if current release does not ezist, then gets the most recent release
-            val lastRelease = releases[index + 1] as Map<String, Any>
-            val lastTag = lastRelease["tag_name"]
-            val tagUrl = "https://api.github.com/repos/$owner/$repo/git/refs/tags/$lastTag"
-            val tagResponse: Response = OkHttpClient()
-                    .newCall(GithubRelease.createRequestWithHeaders(authorizationProvider)
-                            .url(tagUrl)
-                            .get()
-                            .build()
-                    ).execute()
+            val lastRelease = releases[index + 1]
+            val lastTag = lastRelease.tag_name
 
-            // retrieves the sha1 commit from the response
-            val bodyS = tagResponse.body()?.bytes()
-            tagResponse.body()?.close()
-            return ((JsonSlurper().parse(bodyS) as Map<String, Any>)["object"] as Map<String, Any>)["sha"].toString()
+            val tagResponse = service.getGitReferenceByTagName(owner.toString(), repo.toString(), lastTag)
+                    .execute()
+
+            return tagResponse.body()?.referenced_object?.sha ?: ""
         }
-
     }
 
     private fun executeAndGetOutput(commands: Iterable<Any>): String {

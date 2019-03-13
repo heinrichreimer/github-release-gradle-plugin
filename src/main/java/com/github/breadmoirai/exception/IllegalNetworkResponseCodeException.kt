@@ -24,9 +24,9 @@
 
 package com.github.breadmoirai.exception
 
-import okhttp3.Response
+import retrofit2.Response
 import java.io.IOException
 
 class IllegalNetworkResponseCodeException(
-        response: Response
+        response: Response<*>
 ) : IOException("Network error ${response.code()}: ${response.message()}")

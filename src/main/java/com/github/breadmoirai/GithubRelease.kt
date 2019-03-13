@@ -29,34 +29,26 @@
 
 package com.github.breadmoirai
 
+import com.github.breadmoirai.api.GitHubApiService
+import com.github.breadmoirai.api.Release
+import com.github.breadmoirai.api.ReleaseInput
 import com.github.breadmoirai.configuration.GithubReleaseConfiguration
 import com.github.breadmoirai.exception.IllegalNetworkResponseCodeException
 import com.github.breadmoirai.exception.RepositoryNotFoundException
 import com.j256.simplemagic.ContentInfoUtil
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-import okhttp3.*
+import okhttp3.MediaType
+import okhttp3.RequestBody
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.api.provider.Provider
+import retrofit2.Response
 
 class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, GithubReleaseConfiguration by configuration {
 
     companion object {
         private val log: Logger = Logging.getLogger(GithubRelease::class.java)
-        val JSON: MediaType = MediaType.parse("application/json; charset=utf-8")!!
-
-        internal fun createRequestWithHeaders(authorization: Provider<CharSequence>): Request.Builder {
-            return Request.Builder()
-                    .addHeader("Authorization", "token " + authorization.get().toString())
-                    .addHeader("User-Agent", "breadmoirai github-release-gradle-plugin")
-                    .addHeader("Accept", "application/vnd.github.v3+json")
-                    .addHeader("Content-Type", JSON.toString())
-        }
     }
 
-    private val client: OkHttpClient = OkHttpClient()
-    private val slurper: JsonSlurper = JsonSlurper()
+    private val service = GitHubApiService(authorizationProvider)
 
     override fun run() {
         val previousReleaseResponse = checkForPreviousRelease()
@@ -88,57 +80,53 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
     }
 
 
-    private fun checkForPreviousRelease(): Response {
-        val releaseUrl = "https://api.github.com/repos/$owner/$repo/releases/tags/$tagName"
+    private fun checkForPreviousRelease(): Response<Release> {
         log.debug("Checking for previuos release.")
-        val request: Request = createRequestWithHeaders(authorizationProvider)
-                .url(releaseUrl)
-                .get()
-                .build()
-        return client
-                .newCall(request)
-                .execute()
+        return service.getReleaseByTagName(
+                owner = owner.toString(),
+                repo = repo.toString(),
+                tagName = tagName.toString()
+        ).execute()
     }
 
-    private fun deletePreviousRelease(previous: Response): Response {
-        val responseJson = slurper.parseText(previous.body()?.string()) as Map<String, Any>
-        val prevReleaseUrl: String = responseJson["url"] as String
+    private fun deletePreviousRelease(previous: Response<Release>) {
+        val body = previous.body() ?: return
 
         log.info("Deleting previous release.")
-        val request: Request = createRequestWithHeaders(authorizationProvider)
-                .url(prevReleaseUrl)
-                .delete()
-                .build()
-        val response: Response = client.newCall(request).execute()
+        val response = service
+                .deleteRelease(owner.toString(), repo.toString(), body.id)
+                .execute()
+
         val status = response.code()
         return when (status) {
-            204 -> response
+            204 -> Unit
             404 -> throw RepositoryNotFoundException(owner.toString(), repo.toString())
             else -> throw IllegalNetworkResponseCodeException(response)
         }
     }
 
-    private fun createRelease(): Response {
+    private fun createRelease(): Response<Release> {
         log.info("Creating GitHub release.")
-        val json: String = JsonOutput.toJson(mapOf(
-                "tag_name" to tagName,
-                "target_commitish" to targetCommitish,
-                "name" to releaseName,
-                "body" to body,
-                "draft" to draft,
-                "prerelease" to prerelease
-        ))
-        val requestBody: RequestBody = RequestBody.create(JSON, json)
-        val request: Request = createRequestWithHeaders(authorizationProvider)
-                .url("https://api.github.com/repos/$owner/$repo/releases")
-                .post(requestBody)
-                .build()
+        val release = ReleaseInput(
+                tagName.toString(),
+                targetCommitish.toString(),
+                releaseName.toString(),
+                body.toString(),
+                draft,
+                prerelease
+        )
 
-        val response: Response = client.newCall(request).execute()
+        val response: Response<Release> = service
+                .createRelease(
+                        owner.toString(),
+                        repo.toString(),
+                        release
+                )
+                .execute()
         val code = response.code()
         return when (code) {
             201 -> {
-                log.info("Created release. Status: ${response.header("Status")}")
+                log.info("Created release. Status: ${response.headers()["Status"]}")
                 response
             }
             404 -> throw RepositoryNotFoundException(owner.toString(), repo.toString())
@@ -151,18 +139,18 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
      * @param response this response should reference the release that the assets will be uploaded to
      * @return a list of responses from uploaded each asset
      */
-    private fun uploadAssets(response: Response): List<Response> {
+    private fun uploadAssets(response: Response<Release>): List<Response<Release.Asset>> {
         val assets = releaseAssets.files
         if (assets.isEmpty()) {
             log.debug("Skip uploading release assets, no assets found.")
             return emptyList()
         }
 
-        log.info("Uploading release assets.")
-        val responseJson = slurper.parseText(response.body()?.string()) as Map<String, Any>
+        val body = response.body() ?: return emptyList()
 
+        log.info("Uploading release assets.")
         val contentInfoUtil = ContentInfoUtil()
-        val assetResponses = assets.asSequence().map { asset ->
+        return assets.map { asset ->
             log.debug("Uploading asset '${asset.name}'")
             val type = contentInfoUtil
                     .findMatch(asset)
@@ -172,18 +160,12 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : Runnable, Githu
             if (type == null) {
                 log.warn("Could not guess media type for file '${asset.name}'")
             }
-            val uploadUrl: String = responseJson["upload_url"] as String
+            val uploadUrl = body.upload_url
             val assetBody: RequestBody = RequestBody.create(type, asset)
 
-            val assetPost: Request = createRequestWithHeaders(authorizationProvider)
-                    .url(uploadUrl.replace("{?name,label}", "?name=${asset.name}"))
-                    .post(assetBody)
-                    .build()
-
-            client.newCall(assetPost).execute()
+            service.uploadReleaseAsset(uploadUrl, assetBody, asset.name)
+                    .execute()
         }
-        assetResponses.forEach { it.close() }
-        return assetResponses.toList()
     }
 
 }

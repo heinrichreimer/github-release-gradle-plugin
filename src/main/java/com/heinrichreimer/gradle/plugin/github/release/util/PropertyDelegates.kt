@@ -24,7 +24,7 @@
 
 @file:Suppress("UnstableApiUsage")
 
-package com.github.breadmoirai.util
+package com.heinrichreimer.gradle.plugin.github.release.util
 
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection

@@ -27,9 +27,9 @@
  * https://github.com/BreadMoirai/github-release-gradle-plugin
  */
 
-package com.github.breadmoirai
+package com.heinrichreimer.gradle.plugin.github.release
 
-import com.github.breadmoirai.configuration.copyFrom
+import com.heinrichreimer.gradle.plugin.github.release.configuration.copyFrom
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger

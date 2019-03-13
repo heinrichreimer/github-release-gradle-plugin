@@ -22,9 +22,30 @@
  * SOFTWARE.
  */
 
-package com.github.breadmoirai.exception
+package com.heinrichreimer.gradle.plugin.github.release.configuration
 
-class RepositoryNotFoundException(
-        owner: String,
-        repo: String
-) : IllegalArgumentException("Repository '$owner/$repo' was not found.")
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
+
+interface ChangeLogSupplierConfiguration {
+
+    @get:Input
+    val executableProvider: Provider<String>
+    @get:Input
+    val executable: String
+
+    @get:Input
+    val currentCommitProvider: Provider<String>
+    @get:Input
+    val currentCommit: String
+
+    @get:Input
+    val lastCommitProvider: Provider<String>
+    @get:Input
+    val lastCommit: String
+
+    @get:Input
+    val optionsProvider: Provider<Iterable<Any>>
+    @get:Input
+    val options: Iterable<Any>
+}

@@ -1,6 +1,6 @@
-package com.github.breadmoirai.api
+package com.heinrichreimer.gradle.plugin.github.release.api
 
-import com.github.breadmoirai.api.converter.HttpUrlJsonAdapter
+import com.heinrichreimer.gradle.plugin.github.release.api.converter.HttpUrlJsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MediaType

@@ -1,4 +1,4 @@
-package com.github.breadmoirai.api
+package com.heinrichreimer.gradle.plugin.github.release.api
 
 import kotlinx.coroutines.Deferred
 import okhttp3.HttpUrl

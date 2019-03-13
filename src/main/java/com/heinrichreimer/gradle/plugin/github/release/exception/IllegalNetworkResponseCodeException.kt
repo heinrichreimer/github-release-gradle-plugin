@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.breadmoirai.exception
+package com.heinrichreimer.gradle.plugin.github.release.exception
 
 import retrofit2.Response
 import java.io.IOException

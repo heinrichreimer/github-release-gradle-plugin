@@ -27,14 +27,14 @@
  * https://github.com/BreadMoirai/github-release-gradle-plugin
  */
 
-package com.github.breadmoirai
+package com.heinrichreimer.gradle.plugin.github.release
 
-import com.github.breadmoirai.configuration.MutableChangeLogSupplierConfiguration
-import com.github.breadmoirai.configuration.MutableGithubReleaseConfiguration
-import com.github.breadmoirai.util.collectionDelegate
-import com.github.breadmoirai.util.property
-import com.github.breadmoirai.util.providerDelegate
-import com.github.breadmoirai.util.valueDelegate
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangeLogSupplierConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableGithubReleaseConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.util.collectionDelegate
+import com.heinrichreimer.gradle.plugin.github.release.util.property
+import com.heinrichreimer.gradle.plugin.github.release.util.providerDelegate
+import com.heinrichreimer.gradle.plugin.github.release.util.valueDelegate
 import groovy.lang.Closure
 import groovy.lang.DelegatesTo
 import org.gradle.api.Action

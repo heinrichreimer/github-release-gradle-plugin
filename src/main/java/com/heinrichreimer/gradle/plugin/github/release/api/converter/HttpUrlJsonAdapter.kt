@@ -1,4 +1,4 @@
-package com.github.breadmoirai.api.converter
+package com.heinrichreimer.gradle.plugin.github.release.api.converter
 
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson

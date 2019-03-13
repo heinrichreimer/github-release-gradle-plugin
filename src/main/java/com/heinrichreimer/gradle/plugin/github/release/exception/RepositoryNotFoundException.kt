@@ -22,22 +22,9 @@
  * SOFTWARE.
  */
 
-package com.github.breadmoirai.configuration
+package com.heinrichreimer.gradle.plugin.github.release.exception
 
-fun GithubReleaseConfiguration.copyTo(configuration: MutableGithubReleaseConfiguration) {
-    configuration.ownerProvider = ownerProvider
-    configuration.repoProvider = repoProvider
-    configuration.authorizationProvider = authorizationProvider
-    configuration.tagNameProvider = tagNameProvider
-    configuration.targetCommitishProvider = targetCommitishProvider
-    configuration.releaseNameProvider = releaseNameProvider
-    configuration.bodyProvider = bodyProvider
-    configuration.draftProvider = draftProvider
-    configuration.prereleaseProvider = prereleaseProvider
-    configuration.releaseAssets = releaseAssets
-    configuration.overwriteProvider = overwriteProvider
-    configuration.allowUploadToExistingProvider = allowUploadToExistingProvider
-}
-
-fun MutableGithubReleaseConfiguration.copyFrom(configuration: GithubReleaseConfiguration) =
-        configuration.copyTo(this)
+class RepositoryNotFoundException(
+        owner: String,
+        repo: String
+) : IllegalArgumentException("Repository '$owner/$repo' was not found.")

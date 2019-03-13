@@ -21,36 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-/*
- * Based on github-release-gradle-plugin by Ton Ly (@BreadMoirai)
- * Licensed under the Apache License v2.0:
- * https://github.com/BreadMoirai/github-release-gradle-plugin
- */
 
-package com.github.breadmoirai
+package com.heinrichreimer.gradle.plugin.github.release.configuration
 
-import com.github.breadmoirai.configuration.MutableGithubReleaseConfiguration
-import kotlinx.coroutines.runBlocking
-import org.gradle.api.DefaultTask
-import org.gradle.api.file.ProjectLayout
-import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.ProviderFactory
-import org.gradle.api.tasks.TaskAction
-import javax.inject.Inject
-
-@Suppress("UnstableApiUsage")
-class GithubReleaseTask @Inject constructor(
-        objects: ObjectFactory,
-        layout: ProjectLayout,
-        providers: ProviderFactory
-) : DefaultTask(), MutableGithubReleaseConfiguration by GithubReleaseExtension(objects, layout, providers) {
-
-    init {
-        group = "publishing"
-    }
-
-    @TaskAction
-    fun publishRelease() = runBlocking {
-        GithubRelease(this@GithubReleaseTask).run()
-    }
+fun GithubReleaseConfiguration.copyTo(configuration: MutableGithubReleaseConfiguration) {
+    configuration.ownerProvider = ownerProvider
+    configuration.repoProvider = repoProvider
+    configuration.authorizationProvider = authorizationProvider
+    configuration.tagNameProvider = tagNameProvider
+    configuration.targetCommitishProvider = targetCommitishProvider
+    configuration.releaseNameProvider = releaseNameProvider
+    configuration.bodyProvider = bodyProvider
+    configuration.draftProvider = draftProvider
+    configuration.prereleaseProvider = prereleaseProvider
+    configuration.releaseAssets = releaseAssets
+    configuration.overwriteProvider = overwriteProvider
+    configuration.allowUploadToExistingProvider = allowUploadToExistingProvider
 }
+
+fun MutableGithubReleaseConfiguration.copyFrom(configuration: GithubReleaseConfiguration) =
+        configuration.copyTo(this)

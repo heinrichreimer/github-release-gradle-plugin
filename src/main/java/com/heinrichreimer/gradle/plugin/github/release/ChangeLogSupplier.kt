@@ -27,11 +27,11 @@
  * https://github.com/BreadMoirai/github-release-gradle-plugin
  */
 
-package com.github.breadmoirai
+package com.heinrichreimer.gradle.plugin.github.release
 
-import com.github.breadmoirai.api.GitHubApiService
-import com.github.breadmoirai.configuration.GithubReleaseConfiguration
-import com.github.breadmoirai.configuration.MutableChangeLogSupplierConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.api.GitHubApiService
+import com.heinrichreimer.gradle.plugin.github.release.configuration.GithubReleaseConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangeLogSupplierConfiguration
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout

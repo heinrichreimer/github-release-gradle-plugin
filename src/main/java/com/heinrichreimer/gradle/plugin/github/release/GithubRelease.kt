@@ -27,14 +27,14 @@
  * https://github.com/BreadMoirai/github-release-gradle-plugin
  */
 
-package com.github.breadmoirai
+package com.heinrichreimer.gradle.plugin.github.release
 
-import com.github.breadmoirai.api.GitHubApiService
-import com.github.breadmoirai.api.Release
-import com.github.breadmoirai.api.ReleaseInput
-import com.github.breadmoirai.configuration.GithubReleaseConfiguration
-import com.github.breadmoirai.exception.IllegalNetworkResponseCodeException
-import com.github.breadmoirai.exception.RepositoryNotFoundException
+import com.heinrichreimer.gradle.plugin.github.release.api.GitHubApiService
+import com.heinrichreimer.gradle.plugin.github.release.api.Release
+import com.heinrichreimer.gradle.plugin.github.release.api.ReleaseInput
+import com.heinrichreimer.gradle.plugin.github.release.configuration.GithubReleaseConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.exception.IllegalNetworkResponseCodeException
+import com.heinrichreimer.gradle.plugin.github.release.exception.RepositoryNotFoundException
 import com.j256.simplemagic.ContentInfoUtil
 import kotlinx.coroutines.awaitAll
 import okhttp3.MediaType

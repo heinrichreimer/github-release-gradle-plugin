@@ -21,31 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+/*
+ * Based on github-release-gradle-plugin by Ton Ly (@BreadMoirai)
+ * Licensed under the Apache License v2.0:
+ * https://github.com/BreadMoirai/github-release-gradle-plugin
+ */
 
-package com.github.breadmoirai.configuration
+package com.heinrichreimer.gradle.plugin.github.release
 
-import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.Input
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableGithubReleaseConfiguration
+import kotlinx.coroutines.runBlocking
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.ProjectLayout
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ProviderFactory
+import org.gradle.api.tasks.TaskAction
+import javax.inject.Inject
 
-interface ChangeLogSupplierConfiguration {
+@Suppress("UnstableApiUsage")
+class GithubReleaseTask @Inject constructor(
+        objects: ObjectFactory,
+        layout: ProjectLayout,
+        providers: ProviderFactory
+) : DefaultTask(), MutableGithubReleaseConfiguration by GithubReleaseExtension(objects, layout, providers) {
 
-    @get:Input
-    val executableProvider: Provider<String>
-    @get:Input
-    val executable: String
+    init {
+        group = "publishing"
+    }
 
-    @get:Input
-    val currentCommitProvider: Provider<String>
-    @get:Input
-    val currentCommit: String
-
-    @get:Input
-    val lastCommitProvider: Provider<String>
-    @get:Input
-    val lastCommit: String
-
-    @get:Input
-    val optionsProvider: Provider<Iterable<Any>>
-    @get:Input
-    val options: Iterable<Any>
+    @TaskAction
+    fun publishRelease() = runBlocking {
+        GithubRelease(this@GithubReleaseTask).run()
+    }
 }

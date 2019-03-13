@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package com.github.breadmoirai
+package com.heinrichreimer.gradle.plugin.github.release
 
-import com.github.breadmoirai.configuration.MutableChangeLogSupplierConfiguration
-import com.github.breadmoirai.util.property
-import com.github.breadmoirai.util.providerDelegate
-import com.github.breadmoirai.util.valueDelegate
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangeLogSupplierConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.util.property
+import com.heinrichreimer.gradle.plugin.github.release.util.providerDelegate
+import com.heinrichreimer.gradle.plugin.github.release.util.valueDelegate
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property

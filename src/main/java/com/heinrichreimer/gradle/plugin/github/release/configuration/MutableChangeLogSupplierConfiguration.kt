@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.breadmoirai.configuration
+package com.heinrichreimer.gradle.plugin.github.release.configuration
 
 import org.gradle.api.provider.Provider
 

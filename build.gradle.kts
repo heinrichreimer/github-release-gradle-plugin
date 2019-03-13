@@ -15,17 +15,17 @@
  */
 
 plugins {
-    id("groovy")
-    id("java-gradle-plugin")
-    id("com.gradle.plugin-publish") version "0.9.7"
+    groovy
+    `java-gradle-plugin`
+    id("com.gradle.plugin-publish") version "0.10.0"
     id("com.github.johnrengelman.shadow") version "2.0.4"
-    id("maven-publish")
+    `maven-publish`
     kotlin("jvm") version "1.3.21"
     kotlin("kapt") version "1.3.21"
 }
 
-group = "com.github.breadmoirai"
-version = "2.2.4"
+group = "com.heinrichreimer"
+version = "3.0.0"
 
 repositories {
     jcenter()
@@ -50,30 +50,55 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1")
     implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
-//    testCompile("org.spockframework:spock-core:1.1-groovy-2.4") {
-//        exclude(group = "org.codehaus.groovy")
-//    }
-//    testCompile(group = "org.testfx", name = "testfx-core", version = "4.0.13-alpha")
-//    testCompile(group = "org.testfx", name = "testfx-spock", version = "4.0.13-alpha")
-//    testCompile(gradleTestKit())
+    testImplementation(gradleTestKit())
+    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.1")
+    testImplementation("ch.tutteli:tutteli-spek-extensions:0.3.0")
+
+    testImplementation("org.amshove.kluent:kluent:1.48")
+    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.1")
+    testRuntimeOnly(kotlin("reflect"))
 }
 
-gradlePlugin {
-    plugins.create("github-release") {
-        id = "com.github.breadmoirai.github-release"
-        implementationClass = "com.github.breadmoirai.GithubReleasePlugin"
+// setup the test task
+val test by tasks.getting(Test::class) {
+    @Suppress("UnstableApiUsage")
+    useJUnitPlatform {
+        includeEngines("spek2")
+    }
+}
+
+sourceSets {
+    create("integrationTest") {
+        java.srcDir(file("src/integTest/java"))
+        resources.srcDir(file("src/integTest/resources"))
+        compileClasspath += sourceSets.main.get().output + configurations.testRuntime
+        runtimeClasspath += output + compileClasspath
+    }
+    create("functionalTest") {
+        java.srcDir(file("src/funcTest/java"))
+        resources.srcDir(file("src/funcTest/resources"))
+        compileClasspath += sourceSets.main.get().output + configurations.testRuntime
+        runtimeClasspath += output + compileClasspath
     }
 }
 
 pluginBundle {
-    website = "https://github.com/BreadMoirai/github-release-gradle-plugin"
-    vcsUrl = "https://github.com/BreadMoirai/github-release-gradle-plugin"
-    description = "A Gradle Plugin to send Releases to Github "
-    tags = setOf("github", "release")
+    website = "https://github.com/heinrichreimer/gradle-github-release"
+    vcsUrl = "https://github.com/heinrichreimer/gradle-github-release"
+    tags = setOf(
+            "github",
+            "release",
+            "continuous integration"
+    )
+}
 
-    plugins.create("github-release") {
-        id = "com.github.breadmoirai.github-release"
-        displayName = "Github Release Plugin"
+gradlePlugin {
+    @Suppress("UnstableApiUsage")
+    plugins.create("githubRelease") {
+        id = "com.heinrichreimer.github-release"
+        displayName = "Gradle Github Release Plugin"
+        description = "A Gradle Plugin to post releases to GitHub."
+        implementationClass = "com.heinrichreimer.gradle.plugin.github.release.GithubReleasePlugin"
     }
 }
 

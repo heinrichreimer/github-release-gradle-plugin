@@ -53,18 +53,7 @@ class GithubReleasePlugin : Plugin<Project> {
 
         githubReleaseExtension.setDefaults(project)
 
-        log.debug("Registering $TASK_NAME task for ${GithubReleasePlugin::class.java.simpleName}.")
-        project.tasks
-                .register(
-                        TASK_NAME,
-                        GithubReleaseTask::class.java,
-                        project.objects,
-                        project.layout,
-                        project.providers
-                )
-                .configure {
-                    it.copyFrom(githubReleaseExtension)
-                }
+        registerTask(githubReleaseExtension)
     }
 
     private fun createExtension(): GithubReleaseExtension {
@@ -102,5 +91,20 @@ class GithubReleasePlugin : Plugin<Project> {
         bodyProvider = changelog
         overwrite = false
         allowUploadToExisting = false
+    }
+
+    private fun registerTask(extension: GithubReleaseExtension) {
+        log.debug("Registering $TASK_NAME task for ${GithubReleasePlugin::class.java.simpleName}.")
+        project.tasks
+                .register(
+                        TASK_NAME,
+                        GithubReleaseTask::class.java,
+                        project.objects,
+                        project.layout,
+                        project.providers
+                )
+                .configure {
+                    it.copyFrom(extension)
+                }
     }
 }

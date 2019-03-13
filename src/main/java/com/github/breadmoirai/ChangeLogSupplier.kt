@@ -20,29 +20,47 @@ import groovy.json.JsonSlurper
 import okhttp3.OkHttpClient
 import okhttp3.Response
 import org.gradle.api.Project
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.provider.ProviderFactory
 import org.zeroturnaround.exec.ProcessExecutor
 import java.io.IOException
 import java.util.concurrent.Callable
 
-class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: Project) : Callable<String> {
+class ChangeLogSupplier(
+        configuration: GithubReleaseConfiguration,
+        private val objects: ObjectFactory,
+        private val layout: ProjectLayout,
+        private val providers: ProviderFactory
+) : Callable<String> {
+
+    constructor(
+            configuration: GithubReleaseConfiguration,
+            project: Project
+    ) : this(
+            configuration = configuration,
+            objects = project.objects,
+            layout = project.layout,
+            providers = project.providers
+    )
 
     companion object {
         private val log: Logger = Logging.getLogger(ChangeLogSupplier::class.java)
     }
 
-    private val owner: Provider<CharSequence> = extension.getOwnerProvider()
-    private val repo: Provider<CharSequence> = extension.getRepoProvider()
-    private val authorization: Provider<CharSequence> = extension.getAuthorizationProvider()
-    private val tag: Provider<CharSequence> = extension.getTagNameProvider()
+    private val owner: Provider<CharSequence> = configuration.ownerProvider
+    private val repo: Provider<CharSequence> = configuration.repoProvider
+    private val authorization: Provider<CharSequence> = configuration.authorizationProvider
+    private val tag: Provider<CharSequence> = configuration.tagNameProvider
 
-    private val executable: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    private val currentCommit: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    private val lastCommit: Property<CharSequence> = project.objects.property(CharSequence::class.java)
-    private val options: Property<List<*>> = project.objects.property(List::class.java)
+    private val executable: Property<CharSequence> = objects.property(CharSequence::class.java)
+    private val currentCommit: Property<CharSequence> = objects.property(CharSequence::class.java)
+    private val lastCommit: Property<CharSequence> = objects.property(CharSequence::class.java)
+    private val options: Property<List<*>> = objects.property(List::class.java)
 
     init {
         setExecutable("git")
@@ -100,7 +118,7 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
 
     private fun executeAndGetOutput(commands: Iterable<Any>): String {
         return ProcessExecutor()
-                .directory(project.layout.projectDirectory.asFile)
+                .directory(layout.projectDirectory.asFile)
                 .command(commands.map { it.toString()})
                 .readOutput(true)
                 .exitValueNormal()
@@ -159,35 +177,35 @@ class ChangeLogSupplier(extension: GithubReleaseExtension, private val project: 
     }
 
     fun setCurrentCommit(currentCommit: Callable<CharSequence>) {
-        setCurrentCommit(project.provider(currentCommit))
+        setCurrentCommit(providers.provider(currentCommit))
     }
 
     fun currentCommit(currentCommit: Callable<CharSequence>) {
-        setCurrentCommit(project.provider(currentCommit))
+        setCurrentCommit(providers.provider(currentCommit))
     }
 
     fun setLastCommit(lastCommit: Callable<CharSequence>) {
-        setLastCommit(project.provider(lastCommit))
+        setLastCommit(providers.provider(lastCommit))
     }
 
     fun lastCommit(lastCommit: Callable<CharSequence>) {
-        setLastCommit(project.provider(lastCommit))
+        setLastCommit(providers.provider(lastCommit))
     }
 
     fun setOptions(options: Callable<List<Any>>) {
-        setOptions(project.provider(options))
+        setOptions(providers.provider(options))
     }
 
     fun options(options: Callable<List<Any>>) {
-        setOptions(project.provider(options))
+        setOptions(providers.provider(options))
     }
 
     fun setExecutable(gitExecutable: Callable<CharSequence>) {
-        setExecutable(project.provider(gitExecutable))
+        setExecutable(providers.provider(gitExecutable))
     }
 
     fun executable(gitExecutable: Callable<CharSequence>) {
-        setExecutable(project.provider(gitExecutable))
+        setExecutable(providers.provider(gitExecutable))
     }
 
     fun setCurrentCommit(currentCommit: CharSequence) {

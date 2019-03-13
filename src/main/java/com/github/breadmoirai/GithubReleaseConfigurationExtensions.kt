@@ -16,7 +16,7 @@
 
 package com.github.breadmoirai
 
-fun GithubReleaseConfiguration.copyTo(configuration: GithubReleaseConfiguration) {
+fun GithubReleaseConfiguration.copyTo(configuration: MutableGithubReleaseConfiguration) {
     configuration.ownerProvider = ownerProvider
     configuration.repoProvider = repoProvider
     configuration.authorizationProvider = authorizationProvider
@@ -26,10 +26,10 @@ fun GithubReleaseConfiguration.copyTo(configuration: GithubReleaseConfiguration)
     configuration.bodyProvider = bodyProvider
     configuration.draftProvider = draftProvider
     configuration.prereleaseProvider = prereleaseProvider
-    configuration.releaseAssetsCollection = releaseAssetsCollection
+    configuration.releaseAssets = releaseAssets
     configuration.overwriteProvider = overwriteProvider
     configuration.allowUploadToExistingProvider = allowUploadToExistingProvider
 }
 
-fun GithubReleaseConfiguration.copyFrom(configuration: GithubReleaseConfiguration) =
+fun MutableGithubReleaseConfiguration.copyFrom(configuration: GithubReleaseConfiguration) =
         configuration.copyTo(this)

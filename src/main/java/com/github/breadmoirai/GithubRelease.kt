@@ -28,7 +28,7 @@ import org.gradle.api.provider.Provider
 class GithubRelease(
         private val owner: Provider<CharSequence>,
         private val repo: Provider<CharSequence>,
-        private val authorization: Provider<CharSequence>,
+        authorization: Provider<CharSequence>,
         private val tagName: Provider<CharSequence>,
         private val targetCommitish: Provider<CharSequence>,
         private val releaseName: Provider<CharSequence>,
@@ -39,6 +39,23 @@ class GithubRelease(
         private val overwrite: Provider<Boolean>,
         private val allowUploadToExisting: Provider<Boolean>
 ) : Runnable {
+
+    private val authorization = authorization.map { "Token $it" as CharSequence }
+
+    constructor(configuration: GithubReleaseConfiguration) : this(
+            owner = configuration.ownerProvider,
+            repo = configuration.repoProvider,
+            authorization = configuration.authorizationProvider,
+            tagName = configuration.tagNameProvider,
+            targetCommitish = configuration.targetCommitishProvider,
+            releaseName = configuration.releaseNameProvider,
+            body = configuration.bodyProvider,
+            draft = configuration.draftProvider,
+            prerelease = configuration.prereleaseProvider,
+            releaseAssets = configuration.releaseAssets,
+            overwrite = configuration.overwriteProvider,
+            allowUploadToExisting = configuration.allowUploadToExistingProvider
+    )
 
     companion object {
         private val log: Logger = Logging.getLogger(GithubRelease::class.java)

@@ -20,8 +20,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.api.provider.Property
-import java.util.concurrent.Callable
 
 class GithubReleasePlugin : Plugin<Project> {
 
@@ -41,18 +39,7 @@ class GithubReleasePlugin : Plugin<Project> {
                 .create(EXTENSION_NAME, GithubReleaseExtension::class.java, project)
 
         project.tasks.create(TASK_NAME, GithubReleaseTask::class.java) {
-            it.authorizationProvider = githubReleaseExtension.getAuthorizationProvider()
-            it.ownerProvider = githubReleaseExtension.getOwnerProvider()
-            it.repoProvider = githubReleaseExtension.getRepoProvider()
-            it.tagNameProvider = githubReleaseExtension.getTagNameProvider()
-            it.targetCommitishProvider = githubReleaseExtension.getTargetCommitishProvider()
-            it.releaseNameProvider = githubReleaseExtension.getReleaseNameProvider()
-            it.bodyProvider = githubReleaseExtension.getBodyProvider()
-            it.draftProvider = githubReleaseExtension.getDraftProvider()
-            it.prereleaseProvider = githubReleaseExtension.getPrereleaseProvider()
-            it.releaseAssetsCollection = githubReleaseExtension.releaseAssets
-            it.overwriteProvider = githubReleaseExtension.getOverwriteProvider()
-            it.allowUploadToExistingProvider = githubReleaseExtension.getAllowUploadToExistingProvider()
+            it.copyFrom(githubReleaseExtension)
         }
 
         project.afterEvaluate {
@@ -63,42 +50,42 @@ class GithubReleasePlugin : Plugin<Project> {
                 val extension: GithubReleaseExtension = project
                         .extensions
                         .getByType(GithubReleaseExtension::class.java)
-                extension.owner.setOrElse(Callable<CharSequence> {
-                    val group = project.group.toString()
-                    group.substring(group.lastIndexOf('.') + 1)
-                })
-                extension.repo.setOrElse(Callable<CharSequence> {
-                    project.name ?: project.rootProject.name ?: project.rootProject.rootProject.name
-                })
-                extension.tagName.setOrElse(Callable<CharSequence> {
-                    "v${project.version}"
-                })
-                extension.targetCommitish.setOrElse(Callable<CharSequence> {
-                    "master"
-                })
-                extension.releaseName.setOrElse(Callable {
-                    extension.tagName.get()
-                })
-                extension.draft.setOrElse(Callable { false })
-                extension.prerelease.setOrElse(Callable { false })
-                extension.authorization.setOrElse(Callable<CharSequence> {
-                    //new GithubLoginApp().awaitResult().map{result -> "Basic $result"}.get()
-                    null
-                })
-                extension.body.setOrElse(Callable<CharSequence> {
-                    ChangeLogSupplier(extension, project).call()
-                })
-                extension.overwrite.setOrElse(Callable { false })
-                extension.allowUploadToExisting.setOrElse(Callable { false })
+//                extension.owner.setOrElse(Callable<CharSequence> {
+//                    val group = project.group.toString()
+//                    group.substring(group.lastIndexOf('.') + 1)
+//                })
+//                extension.repo.setOrElse(Callable<CharSequence> {
+//                    project.name ?: project.rootProject.name ?: project.rootProject.rootProject.name
+//                })
+//                extension.tagName.setOrElse(Callable<CharSequence> {
+//                    "v${project.version}"
+//                })
+//                extension.targetCommitish.setOrElse(Callable<CharSequence> {
+//                    "master"
+//                })
+//                extension.releaseName.setOrElse(Callable {
+//                    extension.tagName.get()
+//                })
+//                extension.draft.setOrElse(Callable { false })
+//                extension.prerelease.setOrElse(Callable { false })
+//                extension.authorization.setOrElse(Callable<CharSequence> {
+//                    //new GithubLoginApp().awaitResult().map{result -> "Basic $result"}.get()
+//                    null
+//                })
+//                extension.body.setOrElse(Callable<CharSequence> {
+//                    ChangeLogSupplier(extension, project).call()
+//                })
+//                extension.overwrite.setOrElse(Callable { false })
+//                extension.allowUploadToExisting.setOrElse(Callable { false })
             }
 
         }
     }
 
-    private fun <T> Property<T>.setOrElse(value: Callable<T>) {
-        if (!isPresent) {
-            set(project.provider(value))
-        }
-    }
+//    private fun <T> Property<T>.setOrElse(value: Callable<T>) {
+//        if (!isPresent) {
+//            set(project.provider(value))
+//        }
+//    }
 
 }

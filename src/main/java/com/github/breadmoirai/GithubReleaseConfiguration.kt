@@ -20,178 +20,72 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
-import java.io.File
 
 interface GithubReleaseConfiguration {
 
     @get:Input
-    var ownerProvider: Provider<CharSequence>
+    val ownerProvider: Provider<CharSequence>
     @get:Input
-    var owner: CharSequence
-
-    fun owner(owner: CharSequence) {
-        this.owner = owner
-    }
-
-    fun owner(owner: Provider<CharSequence>) {
-        ownerProvider = owner
-    }
+    val owner: CharSequence
 
     @get:Input
-    var repoProvider: Provider<CharSequence>
+    val repoProvider: Provider<CharSequence>
     @get:Input
-    var repo: CharSequence
-
-    fun repo(repo: CharSequence) {
-        this.repo = repo
-    }
-
-    fun repo(repo: Provider<CharSequence>) {
-        repoProvider = repo
-    }
+    val repo: CharSequence
 
     @get:Input
-    var authorizationProvider: Provider<CharSequence>
+    val authorizationProvider: Provider<CharSequence>
     @get:Input
-    var authorization: CharSequence
-
-    fun authorization(authorization: CharSequence) {
-        this.authorization = authorization
-    }
-
-    fun authorization(authorization: Provider<CharSequence>) {
-        authorizationProvider = authorization
-    }
+    val authorization: CharSequence
 
     @get:Input
-    var tokenProvider: Provider<CharSequence>
+    val tokenProvider: Provider<CharSequence>
         get() = authorizationProvider
-        set(value) {
-            authorizationProvider = value
-        }
     @get:Input
-    var token: CharSequence
+    val token: CharSequence
         get() = authorization
-        set(value) {
-            authorization = value
-        }
-
-    fun token(token: CharSequence) = authorization(token)
-    fun token(token: Provider<CharSequence>) = authorization(token)
 
     @get:Input
-    var tagNameProvider: Provider<CharSequence>
+    val tagNameProvider: Provider<CharSequence>
     @get:Input
-    var tagName: CharSequence
-
-    fun tagName(tagName: CharSequence) {
-        this.tagName = tagName
-    }
-
-    fun tagName(tagName: Provider<CharSequence>) {
-        tagNameProvider = tagName
-    }
+    val tagName: CharSequence
 
     @get:Input
-    var targetCommitishProvider: Provider<CharSequence>
+    val targetCommitishProvider: Provider<CharSequence>
     @get:Input
-    var targetCommitish: CharSequence
-
-    fun targetCommitish(targetCommitish: CharSequence) {
-        this.targetCommitish = targetCommitish
-    }
-
-    fun targetCommitish(targetCommitish: Provider<CharSequence>) {
-        targetCommitishProvider = targetCommitish
-    }
+    val targetCommitish: CharSequence
 
     @get:Input
-    var releaseNameProvider: Provider<CharSequence>
+    val releaseNameProvider: Provider<CharSequence>
     @get:Input
-    var releaseName: CharSequence
-
-    fun releaseName(releaseName: CharSequence) {
-        this.releaseName = releaseName
-    }
-
-    fun releaseName(releaseName: Provider<CharSequence>) {
-        releaseNameProvider = releaseName
-    }
+    val releaseName: CharSequence
 
     @get:Input
-    var bodyProvider: Provider<CharSequence>
+    val bodyProvider: Provider<CharSequence>
     @get:Input
-    var body: CharSequence
-
-    fun body(body: CharSequence) {
-        this.body = body
-    }
-
-    fun body(body: Provider<CharSequence>) {
-        bodyProvider = body
-    }
+    val body: CharSequence
 
     @get:Input
-    var draftProvider: Provider<Boolean>
+    val draftProvider: Provider<Boolean>
     @get:Input
-    var draft: Boolean
-
-    fun draft(draft: Boolean) {
-        this.draft = draft
-    }
-
-    fun draft(draft: Provider<Boolean>) {
-        draftProvider = draft
-    }
+    val draft: Boolean
 
     @get:Input
-    var prereleaseProvider: Provider<Boolean>
+    val prereleaseProvider: Provider<Boolean>
     @get:Input
-    var prerelease: Boolean
-
-    fun prerelease(prerelease: Boolean) {
-        this.prerelease = prerelease
-    }
-
-    fun prerelease(prerelease: Provider<Boolean>) {
-        prereleaseProvider = prerelease
-    }
+    val prerelease: Boolean
 
     @get:InputFiles
-    var releaseAssetsCollection: FileCollection
-    @get:InputFiles
-    var releaseAssets: Iterable<File>
-    @get:InputFiles
-    var releaseAsset: File
-
-    fun releaseAssets(assets: Iterable<Any>)
-    fun releaseAssets(vararg assets: Any) = releaseAssets(assets.asIterable())
-    fun releaseAsset(asset: Any) = releaseAssets(setOf(asset))
+    val releaseAssets: FileCollection
 
     @get:Input
-    var overwriteProvider: Provider<Boolean>
+    val overwriteProvider: Provider<Boolean>
     @get:Input
-    var overwrite: Boolean
-
-    fun overwrite(overwrite: Boolean) {
-        this.overwrite = overwrite
-    }
-
-    fun overwrite(overwrite: Provider<Boolean>) {
-        overwriteProvider = overwrite
-    }
+    val overwrite: Boolean
 
     @get:Input
-    var allowUploadToExistingProvider: Provider<Boolean>
+    val allowUploadToExistingProvider: Provider<Boolean>
     @get:Input
-    var allowUploadToExisting: Boolean
-
-    fun allowUploadToExisting(allowUploadToExisting: Boolean) {
-        this.allowUploadToExisting = allowUploadToExisting
-    }
-
-    fun allowUploadToExisting(allowUploadToExisting: Provider<Boolean>) {
-        allowUploadToExistingProvider = allowUploadToExisting
-    }
+    val allowUploadToExisting: Boolean
 
 }

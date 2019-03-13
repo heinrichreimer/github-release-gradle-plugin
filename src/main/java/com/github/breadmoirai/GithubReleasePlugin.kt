@@ -44,27 +44,21 @@ class GithubReleasePlugin : Plugin<Project> {
         private val log: Logger = Logging.getLogger(GithubReleasePlugin::class.java)
     }
 
-    private lateinit var project: Project
-
     override fun apply(project: Project) {
-        this.project = project
-
-        val githubReleaseExtension = createExtension()
-
+        val githubReleaseExtension = project.createExtension()
         githubReleaseExtension.setDefaults(project)
-
-        registerTask(githubReleaseExtension)
+        project.registerTask(githubReleaseExtension)
     }
 
-    private fun createExtension(): GithubReleaseExtension {
+    private fun Project.createExtension(): GithubReleaseExtension {
         log.debug("Creating $EXTENSION_NAME extension for ${GithubReleasePlugin::class.java.simpleName}.")
-        return project.extensions
+        return extensions
                 .create(
                         EXTENSION_NAME,
                         GithubReleaseExtension::class.java,
-                        project.objects,
-                        project.layout,
-                        project.providers
+                        objects,
+                        layout,
+                        providers
                 )
     }
 
@@ -93,15 +87,15 @@ class GithubReleasePlugin : Plugin<Project> {
         allowUploadToExisting = false
     }
 
-    private fun registerTask(extension: GithubReleaseExtension) {
+    private fun Project.registerTask(extension: GithubReleaseExtension) {
         log.debug("Registering $TASK_NAME task for ${GithubReleasePlugin::class.java.simpleName}.")
-        project.tasks
+        tasks
                 .register(
                         TASK_NAME,
                         GithubReleaseTask::class.java,
-                        project.objects,
-                        project.layout,
-                        project.providers
+                        objects,
+                        layout,
+                        providers
                 )
                 .configure {
                     it.copyFrom(extension)

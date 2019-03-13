@@ -86,11 +86,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
 
     private suspend fun checkForPreviousRelease(): Response<Release> {
         log.debug("Checking for previuos release.")
-        return service.getReleaseByTagName(
-                owner = owner.toString(),
-                repo = repository.toString(),
-                tagName = tag.toString()
-        ).await()
+        return service.getReleaseByTagName(owner, repository, tag).await()
     }
 
     private suspend fun deletePreviousRelease(previous: Response<Release>) {
@@ -98,13 +94,13 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
 
         log.info("Deleting previous release.")
         val response = service
-                .deleteRelease(owner.toString(), repository.toString(), body.id)
+                .deleteRelease(owner, repository, body.id)
                 .await()
 
         val status = response.code()
         return when (status) {
             204 -> Unit
-            404 -> throw RepositoryNotFoundException(owner.toString(), repository.toString())
+            404 -> throw RepositoryNotFoundException(owner, repository)
             else -> throw IllegalNetworkResponseCodeException(response)
         }
     }
@@ -112,20 +108,16 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
     private suspend fun createRelease(): Response<Release> {
         log.info("Creating GitHub release.")
         val release = ReleaseInput(
-                tag.toString(),
-                target.toString(),
-                name.toString(),
-                body.toString(),
+                tag,
+                target,
+                name,
+                body,
                 isDraft,
                 isPreRelease
         )
 
         val response: Response<Release> = service
-                .createRelease(
-                        owner.toString(),
-                        repository.toString(),
-                        release
-                )
+                .createRelease(owner, repository, release)
                 .await()
         val code = response.code()
         return when (code) {
@@ -133,7 +125,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
                 log.info("Created release. Status: ${response.headers()["Status"]}")
                 response
             }
-            404 -> throw RepositoryNotFoundException(owner.toString(), repository.toString())
+            404 -> throw RepositoryNotFoundException(owner, repository)
             else -> throw IllegalNetworkResponseCodeException(response)
         }
     }

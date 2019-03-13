@@ -12,33 +12,33 @@ interface GitHubService {
     @GET("repos/{owner}/{repository}/releases")
     fun getReleases(
             @Path("owner") owner: String,
-            @Path("repository") repo: String
+            @Path("repository") repository: String
     ): Deferred<Response<List<Release>>>
 
     @GET("repos/{owner}/{repository}/releases/tags/{tag}")
     fun getReleaseByTagName(
             @Path("owner") owner: String,
-            @Path("repository") repo: String,
-            @Path("tag") tagName: String
+            @Path("repository") repository: String,
+            @Path("tag") tag: String
     ): Deferred<Response<Release>>
 
     @GET("repos/{owner}/{repository}/releases/latest")
     fun getLastRelease(
             @Path("owner") owner: String,
-            @Path("repository") repo: String
+            @Path("repository") repository: String
     ): Deferred<Response<Release>>
 
     @POST("repos/{owner}/{repository}/releases")
     fun createRelease(
             @Path("owner") owner: String,
-            @Path("repository") repo: String,
+            @Path("repository") repository: String,
             @Body release: ReleaseInput
     ): Deferred<Response<Release>>
 
     @DELETE("repos/{owner}/{repository}/releases/{release_id}")
     fun deleteRelease(
             @Path("owner") owner: String,
-            @Path("repository") repo: String,
+            @Path("repository") repository: String,
             @Path("release_id") releaseId: Int
     ): Deferred<Response<ResponseBody>>
 
@@ -53,7 +53,7 @@ interface GitHubService {
     @GET("repos/{owner}/{repository}/git/refs/tags/{tag}")
     fun getGitReferenceByTagName(
             @Path("owner") owner: String,
-            @Path("repository") repo: String,
-            @Path("tag") tagName: String
+            @Path("repository") repository: String,
+            @Path("tag") tag: String
     ): Deferred<Response<GitReference>>
 }

@@ -108,7 +108,7 @@ import org.gradle.api.tasks.Internal
  *
  */
 @Suppress("UnstableApiUsage")
-class GitHubReleaseExtension(
+open class GitHubReleaseExtension(
         objects: ObjectFactory,
         layout: ProjectLayout,
         private val providers: ProviderFactory

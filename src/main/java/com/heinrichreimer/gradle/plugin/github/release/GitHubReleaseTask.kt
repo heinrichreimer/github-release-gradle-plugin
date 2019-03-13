@@ -39,7 +39,7 @@ import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 @Suppress("UnstableApiUsage")
-class GitHubReleaseTask @Inject constructor(
+open class GitHubReleaseTask @Inject constructor(
         objects: ObjectFactory,
         layout: ProjectLayout,
         providers: ProviderFactory

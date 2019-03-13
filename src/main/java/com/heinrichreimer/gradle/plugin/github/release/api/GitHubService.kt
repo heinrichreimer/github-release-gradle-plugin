@@ -10,40 +10,40 @@ import retrofit2.http.*
 interface GitHubService {
 
     @GET("repos/{owner}/{repository}/releases")
-    fun getReleases(
+    fun getReleasesAsync(
             @Path("owner") owner: String,
             @Path("repository") repository: String
     ): Deferred<Response<List<Release>>>
 
     @GET("repos/{owner}/{repository}/releases/tags/{tag}")
-    fun getReleaseByTagName(
+    fun getReleaseByTagNameAsync(
             @Path("owner") owner: String,
             @Path("repository") repository: String,
             @Path("tag") tag: String
     ): Deferred<Response<Release>>
 
     @GET("repos/{owner}/{repository}/releases/latest")
-    fun getLastRelease(
+    fun getLastReleaseAsync(
             @Path("owner") owner: String,
             @Path("repository") repository: String
     ): Deferred<Response<Release>>
 
     @POST("repos/{owner}/{repository}/releases")
-    fun createRelease(
+    fun createReleaseAsync(
             @Path("owner") owner: String,
             @Path("repository") repository: String,
             @Body release: ReleaseInput
     ): Deferred<Response<Release>>
 
     @DELETE("repos/{owner}/{repository}/releases/{release_id}")
-    fun deleteRelease(
+    fun deleteReleaseAsync(
             @Path("owner") owner: String,
             @Path("repository") repository: String,
             @Path("release_id") releaseId: Int
     ): Deferred<Response<ResponseBody>>
 
     @POST
-    fun uploadReleaseAsset(
+    fun uploadReleaseAssetAsync(
             @Url uploadUrl: HttpUrl,
             @Body release: RequestBody,
             @Query("name") name: String,
@@ -51,7 +51,7 @@ interface GitHubService {
     ): Deferred<Response<Release.Asset>>
 
     @GET("repos/{owner}/{repository}/git/refs/tags/{tag}")
-    fun getGitReferenceByTagName(
+    fun getGitReferenceByTagNameAsync(
             @Path("owner") owner: String,
             @Path("repository") repository: String,
             @Path("tag") tag: String

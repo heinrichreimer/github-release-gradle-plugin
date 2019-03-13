@@ -89,7 +89,7 @@ class ChangeLogSupplier(
 
         // query the github api for releases
         val response = service
-                .getReleases(owner, repo)
+                .getReleasesAsync(owner, repo)
                 .await()
 
         if (response.code() != 200) {
@@ -110,7 +110,7 @@ class ChangeLogSupplier(
             val lastRelease = releases[index + 1]
             val lastTag = lastRelease.tag_name
 
-            val tagResponse = service.getGitReferenceByTagName(owner, repo, lastTag)
+            val tagResponse = service.getGitReferenceByTagNameAsync(owner, repo, lastTag)
                     .await()
 
             return tagResponse.body()?.referenced_object?.sha ?: ""

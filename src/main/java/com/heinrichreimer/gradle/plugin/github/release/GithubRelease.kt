@@ -86,7 +86,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
 
     private suspend fun checkForPreviousRelease(): Response<Release> {
         log.debug("Checking for previuos release.")
-        return service.getReleaseByTagName(owner, repository, tag).await()
+        return service.getReleaseByTagNameAsync(owner, repository, tag).await()
     }
 
     private suspend fun deletePreviousRelease(previous: Response<Release>) {
@@ -94,7 +94,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
 
         log.info("Deleting previous release.")
         val response = service
-                .deleteRelease(owner, repository, body.id)
+                .deleteReleaseAsync(owner, repository, body.id)
                 .await()
 
         val status = response.code()
@@ -117,7 +117,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
         )
 
         val response: Response<Release> = service
-                .createRelease(owner, repository, release)
+                .createReleaseAsync(owner, repository, release)
                 .await()
         val code = response.code()
         return when (code) {
@@ -160,7 +160,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
             val uploadUrl = body.upload_url
             val assetBody: RequestBody = RequestBody.create(type, asset)
 
-            service.uploadReleaseAsset(uploadUrl, assetBody, asset.name)
+                    service.uploadReleaseAssetAsync(uploadUrl, assetBody, asset.name)
         }
                 .awaitAll()
     }

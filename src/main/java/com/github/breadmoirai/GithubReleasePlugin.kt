@@ -49,15 +49,7 @@ class GithubReleasePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         this.project = project
 
-        log.debug("Creating $EXTENSION_NAME extension for ${GithubReleasePlugin::class.java.simpleName}.")
-        val githubReleaseExtension = project.extensions
-                .create(
-                        EXTENSION_NAME,
-                        GithubReleaseExtension::class.java,
-                        project.objects,
-                        project.layout,
-                        project.providers
-                )
+        val githubReleaseExtension = createExtension()
 
         githubReleaseExtension.setDefaults(project)
 
@@ -73,6 +65,18 @@ class GithubReleasePlugin : Plugin<Project> {
                 .configure {
                     it.copyFrom(githubReleaseExtension)
                 }
+    }
+
+    private fun createExtension(): GithubReleaseExtension {
+        log.debug("Creating $EXTENSION_NAME extension for ${GithubReleasePlugin::class.java.simpleName}.")
+        return project.extensions
+                .create(
+                        EXTENSION_NAME,
+                        GithubReleaseExtension::class.java,
+                        project.objects,
+                        project.layout,
+                        project.providers
+                )
     }
 
     private fun GithubReleaseExtension.setDefaults(project: Project) {

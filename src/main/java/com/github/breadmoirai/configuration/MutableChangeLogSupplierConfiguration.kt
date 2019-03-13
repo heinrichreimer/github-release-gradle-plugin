@@ -28,44 +28,44 @@ import org.gradle.api.provider.Provider
 
 interface MutableChangeLogSupplierConfiguration : ChangeLogSupplierConfiguration {
 
-    override var executableProvider: Provider<CharSequence>
-    override var executable: CharSequence
+    override var executableProvider: Provider<String>
+    override var executable: String
 
-    fun executable(executable: CharSequence) {
+    fun executable(executable: String) {
         this.executable = executable
     }
 
-    fun executable(executable: Provider<CharSequence>) {
+    fun executable(executable: Provider<String>) {
         executableProvider = executable
     }
 
-    fun executable(executable: () -> CharSequence)
+    fun executable(executable: () -> String)
 
-    override var currentCommitProvider: Provider<CharSequence>
-    override var currentCommit: CharSequence
+    override var currentCommitProvider: Provider<String>
+    override var currentCommit: String
 
-    fun currentCommit(currentCommit: CharSequence) {
+    fun currentCommit(currentCommit: String) {
         this.currentCommit = currentCommit
     }
 
-    fun currentCommit(currentCommit: Provider<CharSequence>) {
+    fun currentCommit(currentCommit: Provider<String>) {
         currentCommitProvider = currentCommit
     }
 
-    fun currentCommit(currentCommit: () -> CharSequence)
+    fun currentCommit(currentCommit: () -> String)
 
-    override var lastCommitProvider: Provider<CharSequence>
-    override var lastCommit: CharSequence
+    override var lastCommitProvider: Provider<String>
+    override var lastCommit: String
 
-    fun lastCommit(lastCommit: CharSequence) {
+    fun lastCommit(lastCommit: String) {
         this.lastCommit = lastCommit
     }
 
-    fun lastCommit(lastCommit: Provider<CharSequence>) {
+    fun lastCommit(lastCommit: Provider<String>) {
         lastCommitProvider = lastCommit
     }
 
-    fun lastCommit(lastCommit: () -> CharSequence)
+    fun lastCommit(lastCommit: () -> String)
 
     override var optionsProvider: Provider<Iterable<Any>>
     override var options: Iterable<Any>

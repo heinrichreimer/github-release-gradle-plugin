@@ -32,46 +32,46 @@ import org.gradle.api.tasks.InputFiles
 interface GithubReleaseConfiguration {
 
     @get:Input
-    val ownerProvider: Provider<CharSequence>
+    val ownerProvider: Provider<String>
     @get:Input
-    val owner: CharSequence
+    val owner: String
 
     @get:Input
-    val repoProvider: Provider<CharSequence>
+    val repoProvider: Provider<String>
     @get:Input
-    val repo: CharSequence
+    val repo: String
 
     @get:Input
-    val authorizationProvider: Provider<CharSequence>
+    val authorizationProvider: Provider<String>
     @get:Input
-    val authorization: CharSequence
+    val authorization: String
 
     @get:Input
-    val tokenProvider: Provider<CharSequence>
+    val tokenProvider: Provider<String>
         get() = authorizationProvider
     @get:Input
-    val token: CharSequence
+    val token: String
         get() = authorization
 
     @get:Input
-    val tagNameProvider: Provider<CharSequence>
+    val tagNameProvider: Provider<String>
     @get:Input
-    val tagName: CharSequence
+    val tagName: String
 
     @get:Input
-    val targetCommitishProvider: Provider<CharSequence>
+    val targetCommitishProvider: Provider<String>
     @get:Input
-    val targetCommitish: CharSequence
+    val targetCommitish: String
 
     @get:Input
-    val releaseNameProvider: Provider<CharSequence>
+    val releaseNameProvider: Provider<String>
     @get:Input
-    val releaseName: CharSequence
+    val releaseName: String
 
     @get:Input
-    val bodyProvider: Provider<CharSequence>
+    val bodyProvider: Provider<String>
     @get:Input
-    val body: CharSequence
+    val body: String
 
     @get:Input
     val draftProvider: Provider<Boolean>

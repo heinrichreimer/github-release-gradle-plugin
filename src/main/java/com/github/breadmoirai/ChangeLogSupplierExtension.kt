@@ -46,26 +46,26 @@ class ChangeLogSupplierExtension(
     )
 
     @get:Internal
-    internal val executableProperty: Property<CharSequence> = objects.property()
+    internal val executableProperty: Property<String> = objects.property()
     override var executableProvider by executableProperty.providerDelegate
     override var executable by executableProperty.valueDelegate
-    override fun executable(executable: () -> CharSequence) {
+    override fun executable(executable: () -> String) {
         executableProvider = providers.provider { executable() }
     }
 
     @get:Internal
-    internal val currentCommitProperty: Property<CharSequence> = objects.property()
+    internal val currentCommitProperty: Property<String> = objects.property()
     override var currentCommitProvider by currentCommitProperty.providerDelegate
     override var currentCommit by currentCommitProperty.valueDelegate
-    override fun currentCommit(currentCommit: () -> CharSequence) {
+    override fun currentCommit(currentCommit: () -> String) {
         currentCommitProvider = providers.provider { currentCommit() }
     }
 
     @get:Internal
-    internal val lastCommitProperty: Property<CharSequence> = objects.property()
+    internal val lastCommitProperty: Property<String> = objects.property()
     override var lastCommitProvider by lastCommitProperty.providerDelegate
     override var lastCommit by lastCommitProperty.valueDelegate
-    override fun lastCommit(lastCommit: () -> CharSequence) {
+    override fun lastCommit(lastCommit: () -> String) {
         lastCommitProvider = providers.provider { lastCommit() }
     }
 

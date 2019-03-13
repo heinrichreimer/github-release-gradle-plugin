@@ -120,58 +120,58 @@ class GithubReleaseExtension(
     )
 
     @get:Internal
-    internal val ownerProperty: Property<CharSequence> = objects.property()
+    internal val ownerProperty: Property<String> = objects.property()
     override var ownerProvider by ownerProperty.providerDelegate
     override var owner by ownerProperty.valueDelegate
-    override fun owner(owner: () -> CharSequence) {
+    override fun owner(owner: () -> String) {
         ownerProvider = providers.provider { owner() }
     }
 
     @get:Internal
-    internal val repoProperty: Property<CharSequence> = objects.property()
+    internal val repoProperty: Property<String> = objects.property()
     override var repoProvider by repoProperty.providerDelegate
     override var repo by repoProperty.valueDelegate
-    override fun repo(repo: () -> CharSequence) {
+    override fun repo(repo: () -> String) {
         repoProvider = providers.provider { repo() }
     }
 
     @get:Internal
-    internal val authorizationProperty: Property<CharSequence> = objects.property()
+    internal val authorizationProperty: Property<String> = objects.property()
     override var authorizationProvider by authorizationProperty.providerDelegate
     override var authorization by authorizationProperty.valueDelegate
-    override fun authorization(authorization: () -> CharSequence) {
+    override fun authorization(authorization: () -> String) {
         authorizationProvider = providers.provider { authorization() }
     }
 
     @get:Internal
-    internal val tagNameProperty: Property<CharSequence> = objects.property()
+    internal val tagNameProperty: Property<String> = objects.property()
     override var tagNameProvider by tagNameProperty.providerDelegate
     override var tagName by tagNameProperty.valueDelegate
-    override fun tagName(tagName: () -> CharSequence) {
+    override fun tagName(tagName: () -> String) {
         tagNameProvider = providers.provider { tagName() }
     }
 
     @get:Internal
-    internal val targetCommitishProperty: Property<CharSequence> = objects.property()
+    internal val targetCommitishProperty: Property<String> = objects.property()
     override var targetCommitishProvider by targetCommitishProperty.providerDelegate
     override var targetCommitish by targetCommitishProperty.valueDelegate
-    override fun targetCommitish(targetCommitish: () -> CharSequence) {
+    override fun targetCommitish(targetCommitish: () -> String) {
         targetCommitishProvider = providers.provider { targetCommitish() }
     }
 
     @get:Internal
-    internal val releaseNameProperty: Property<CharSequence> = objects.property()
+    internal val releaseNameProperty: Property<String> = objects.property()
     override var releaseNameProvider by releaseNameProperty.providerDelegate
     override var releaseName by releaseNameProperty.valueDelegate
-    override fun releaseName(releaseName: () -> CharSequence) {
+    override fun releaseName(releaseName: () -> String) {
         releaseNameProvider = providers.provider { releaseName() }
     }
 
     @get:Internal
-    internal val bodyProperty: Property<CharSequence> = objects.property()
+    internal val bodyProperty: Property<String> = objects.property()
     override var bodyProvider by bodyProperty.providerDelegate
     override var body by bodyProperty.valueDelegate
-    override fun body(body: () -> CharSequence) {
+    override fun body(body: () -> String) {
         bodyProvider = providers.provider { body() }
     }
 
@@ -214,16 +214,35 @@ class GithubReleaseExtension(
     private val changeLogSupplier = ChangeLogSupplier(this, objects, layout, providers)
 
     val changelog: Provider<String>
-        get() = providers.provider(changeLogSupplier)
+        get() = providers.provider {
+            changeLogSupplier.call()
+        }
 
-    fun changelog(@DelegatesTo(MutableChangeLogSupplierConfiguration::class)
-                  closure: Closure<MutableChangeLogSupplierConfiguration>): Provider<String> =
-            providers.provider(changeLogSupplier.apply { closure.call() })
+    fun changelog(
+            @DelegatesTo(MutableChangeLogSupplierConfiguration::class)
+            closure: Closure<MutableChangeLogSupplierConfiguration>
+    ): Provider<String> {
+        return providers.provider {
+            changeLogSupplier
+                    .apply { closure.call() }
+                    .call()
+        }
+    }
 
-    fun changelog(action: Action<MutableChangeLogSupplierConfiguration>): Provider<String> =
-            providers.provider(changeLogSupplier.also(action::execute))
+    fun changelog(action: Action<MutableChangeLogSupplierConfiguration>): Provider<String> {
+        return providers.provider {
+            changeLogSupplier
+                    .also(action::execute)
+                    .call()
+        }
+    }
 
-    fun changelog(block: (MutableChangeLogSupplierConfiguration) -> Unit): Provider<String> =
-            providers.provider(changeLogSupplier.also(block))
+    fun changelog(block: (MutableChangeLogSupplierConfiguration) -> Unit): Provider<String> {
+        return providers.provider {
+            changeLogSupplier
+                    .also(block)
+                    .call()
+        }
+    }
 
 }

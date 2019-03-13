@@ -82,7 +82,7 @@ class ChangeLogSupplier(
     /**
      * Looks for the previous release's target commit.
      */
-    private suspend fun getLastReleaseCommit(): CharSequence {
+    private suspend fun getLastReleaseCommit(): String {
         val owner = owner
         val repo = repo
 

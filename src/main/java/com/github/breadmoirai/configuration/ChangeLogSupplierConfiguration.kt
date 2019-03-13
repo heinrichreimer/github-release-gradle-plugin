@@ -30,19 +30,19 @@ import org.gradle.api.tasks.Input
 interface ChangeLogSupplierConfiguration {
 
     @get:Input
-    val executableProvider: Provider<CharSequence>
+    val executableProvider: Provider<String>
     @get:Input
-    val executable: CharSequence
+    val executable: String
 
     @get:Input
-    val currentCommitProvider: Provider<CharSequence>
+    val currentCommitProvider: Provider<String>
     @get:Input
-    val currentCommit: CharSequence
+    val currentCommit: String
 
     @get:Input
-    val lastCommitProvider: Provider<CharSequence>
+    val lastCommitProvider: Provider<String>
     @get:Input
-    val lastCommit: CharSequence
+    val lastCommit: String
 
     @get:Input
     val optionsProvider: Provider<Iterable<Any>>

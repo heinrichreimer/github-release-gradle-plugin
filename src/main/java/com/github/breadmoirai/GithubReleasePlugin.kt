@@ -64,17 +64,17 @@ class GithubReleasePlugin : Plugin<Project> {
                 val extension: GithubReleaseExtension = project
                         .extensions
                         .getByType(GithubReleaseExtension::class.java)
-//                extension.owner.setOrElse(Callable<CharSequence> {
+//                extension.owner.setOrElse(Callable<String> {
 //                    val group = project.group.toString()
 //                    group.substring(group.lastIndexOf('.') + 1)
 //                })
-//                extension.repo.setOrElse(Callable<CharSequence> {
+//                extension.repo.setOrElse(Callable<String> {
 //                    project.name ?: project.rootProject.name ?: project.rootProject.rootProject.name
 //                })
-//                extension.tagName.setOrElse(Callable<CharSequence> {
+//                extension.tagName.setOrElse(Callable<String> {
 //                    "v${project.version}"
 //                })
-//                extension.targetCommitish.setOrElse(Callable<CharSequence> {
+//                extension.targetCommitish.setOrElse(Callable<String> {
 //                    "master"
 //                })
 //                extension.releaseName.setOrElse(Callable {
@@ -82,11 +82,11 @@ class GithubReleasePlugin : Plugin<Project> {
 //                })
 //                extension.draft.setOrElse(Callable { false })
 //                extension.prerelease.setOrElse(Callable { false })
-//                extension.authorization.setOrElse(Callable<CharSequence> {
+//                extension.authorization.setOrElse(Callable<String> {
 //                    //new GithubLoginApp().awaitResult().map{result -> "Basic $result"}.get()
 //                    null
 //                })
-//                extension.body.setOrElse(Callable<CharSequence> {
+//                extension.body.setOrElse(Callable<String> {
 //                    ChangeLogSupplier(extension, project).call()
 //                })
 //                extension.overwrite.setOrElse(Callable { false })

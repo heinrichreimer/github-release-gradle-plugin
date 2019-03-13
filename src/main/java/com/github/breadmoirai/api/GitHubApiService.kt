@@ -14,7 +14,7 @@ class GitHubApiService(
 ) : GitHubService by retrofit.create(GitHubService::class.java) {
 
     constructor(
-            authorization: Provider<CharSequence>,
+            authorization: Provider<String>,
             baseUrl: String = DEFAULT_BASE_URL
 
     ) : this(

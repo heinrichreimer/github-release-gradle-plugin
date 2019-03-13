@@ -29,111 +29,111 @@ import org.gradle.api.provider.Provider
 
 interface MutableGithubReleaseConfiguration : GithubReleaseConfiguration {
 
-    override var ownerProvider: Provider<CharSequence>
-    override var owner: CharSequence
+    override var ownerProvider: Provider<String>
+    override var owner: String
 
-    fun owner(owner: CharSequence) {
+    fun owner(owner: String) {
         this.owner = owner
     }
 
-    fun owner(owner: Provider<CharSequence>) {
+    fun owner(owner: Provider<String>) {
         ownerProvider = owner
     }
 
-    fun owner(owner: () -> CharSequence)
+    fun owner(owner: () -> String)
 
-    override var repoProvider: Provider<CharSequence>
-    override var repo: CharSequence
+    override var repoProvider: Provider<String>
+    override var repo: String
 
-    fun repo(repo: CharSequence) {
+    fun repo(repo: String) {
         this.repo = repo
     }
 
-    fun repo(repo: Provider<CharSequence>) {
+    fun repo(repo: Provider<String>) {
         repoProvider = repo
     }
 
-    fun repo(repo: () -> CharSequence)
+    fun repo(repo: () -> String)
 
-    override var authorizationProvider: Provider<CharSequence>
-    override var authorization: CharSequence
+    override var authorizationProvider: Provider<String>
+    override var authorization: String
 
-    fun authorization(authorization: CharSequence) {
+    fun authorization(authorization: String) {
         this.authorization = authorization
     }
 
-    fun authorization(authorization: Provider<CharSequence>) {
+    fun authorization(authorization: Provider<String>) {
         authorizationProvider = authorization
     }
 
-    fun authorization(authorization: () -> CharSequence)
+    fun authorization(authorization: () -> String)
 
-    override var tokenProvider: Provider<CharSequence>
+    override var tokenProvider: Provider<String>
         get() = authorizationProvider
         set(value) {
             authorizationProvider = value
         }
-    override var token: CharSequence
+    override var token: String
         get() = authorization
         set(value) {
             authorization = value
         }
 
-    fun token(token: CharSequence) = authorization(token)
-    fun token(token: Provider<CharSequence>) = authorization(token)
-    fun token(token: () -> CharSequence) = authorization(token)
+    fun token(token: String) = authorization(token)
+    fun token(token: Provider<String>) = authorization(token)
+    fun token(token: () -> String) = authorization(token)
 
-    override var tagNameProvider: Provider<CharSequence>
-    override var tagName: CharSequence
+    override var tagNameProvider: Provider<String>
+    override var tagName: String
 
-    fun tagName(tagName: CharSequence) {
+    fun tagName(tagName: String) {
         this.tagName = tagName
     }
 
-    fun tagName(tagName: Provider<CharSequence>) {
+    fun tagName(tagName: Provider<String>) {
         tagNameProvider = tagName
     }
 
-    fun tagName(tagName: () -> CharSequence)
+    fun tagName(tagName: () -> String)
 
-    override var targetCommitishProvider: Provider<CharSequence>
-    override var targetCommitish: CharSequence
+    override var targetCommitishProvider: Provider<String>
+    override var targetCommitish: String
 
-    fun targetCommitish(targetCommitish: CharSequence) {
+    fun targetCommitish(targetCommitish: String) {
         this.targetCommitish = targetCommitish
     }
 
-    fun targetCommitish(targetCommitish: Provider<CharSequence>) {
+    fun targetCommitish(targetCommitish: Provider<String>) {
         targetCommitishProvider = targetCommitish
     }
 
-    fun targetCommitish(targetCommitish: () -> CharSequence)
+    fun targetCommitish(targetCommitish: () -> String)
 
-    override var releaseNameProvider: Provider<CharSequence>
-    override var releaseName: CharSequence
+    override var releaseNameProvider: Provider<String>
+    override var releaseName: String
 
-    fun releaseName(releaseName: CharSequence) {
+    fun releaseName(releaseName: String) {
         this.releaseName = releaseName
     }
 
-    fun releaseName(releaseName: Provider<CharSequence>) {
+    fun releaseName(releaseName: Provider<String>) {
         releaseNameProvider = releaseName
     }
 
-    fun releaseName(releaseName: () -> CharSequence)
+    fun releaseName(releaseName: () -> String)
 
-    override var bodyProvider: Provider<CharSequence>
-    override var body: CharSequence
+    override var bodyProvider: Provider<String>
+    override var body: String
 
-    fun body(body: CharSequence) {
+    fun body(body: String) {
         this.body = body
     }
 
-    fun body(body: Provider<CharSequence>) {
+    fun body(body: Provider<String>) {
         bodyProvider = body
     }
 
-    fun body(body: () -> CharSequence)
+    fun body(body: () -> String)
 
     override var draftProvider: Provider<Boolean>
     override var draft: Boolean

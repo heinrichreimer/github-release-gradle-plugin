@@ -165,8 +165,8 @@ interface GithubReleaseConfiguration {
     var releaseAsset: File
 
     fun releaseAssets(assets: Iterable<Any>)
-    fun releaseAssets(vararg assets: Any) = releaseAsset(assets.asIterable())
-    fun releaseAsset(asset: Any)
+    fun releaseAssets(vararg assets: Any) = releaseAssets(assets.asIterable())
+    fun releaseAsset(asset: Any) = releaseAssets(setOf(asset))
 
     @get:Input
     var overwriteProvider: Provider<Boolean>

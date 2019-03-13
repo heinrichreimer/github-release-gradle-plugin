@@ -59,28 +59,7 @@ class GithubReleasePlugin : Plugin<Project> {
                         project.providers
                 )
 
-        log.debug("Assigning default values for ${GithubReleasePlugin::class.java.simpleName}.")
-        githubReleaseExtension.owner {
-            val group = project.group.toString()
-            group.substring(group.lastIndexOf('.') + 1)
-        }
-
-        githubReleaseExtension.repo {
-            project.name ?: project.rootProject.name ?: project.rootProject.rootProject.name
-        }
-        githubReleaseExtension.tagName {
-            "v${project.version}"
-        }
-        githubReleaseExtension.targetCommitish = "master"
-        githubReleaseExtension.releaseNameProvider = githubReleaseExtension.tagNameProvider
-        githubReleaseExtension.draft = false
-        githubReleaseExtension.prerelease = false
-        githubReleaseExtension.authorization {
-            throw IllegalArgumentException("Must specify GitHub authorization token.")
-        }
-        githubReleaseExtension.bodyProvider = githubReleaseExtension.changelog
-        githubReleaseExtension.overwrite = false
-        githubReleaseExtension.allowUploadToExisting = false
+        githubReleaseExtension.setDefaults(project)
 
         log.debug("Registering $TASK_NAME task for ${GithubReleasePlugin::class.java.simpleName}.")
         project.tasks
@@ -105,5 +84,30 @@ class GithubReleasePlugin : Plugin<Project> {
             }
 
         }
+    }
+
+    private fun GithubReleaseExtension.setDefaults(project: Project) {
+        log.debug("Assigning default values for ${GithubReleasePlugin::class.java.simpleName}.")
+        owner {
+            val group = project.group.toString()
+            group.substring(group.lastIndexOf('.') + 1)
+        }
+
+        repo {
+            project.name ?: project.rootProject.name ?: project.rootProject.rootProject.name
+        }
+        tagName {
+            "v${project.version}"
+        }
+        targetCommitish = "master"
+        releaseNameProvider = tagNameProvider
+        draft = false
+        prerelease = false
+        authorization {
+            throw IllegalArgumentException("Must specify GitHub authorization token.")
+        }
+        bodyProvider = changelog
+        overwrite = false
+        allowUploadToExisting = false
     }
 }

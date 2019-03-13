@@ -32,7 +32,6 @@ package com.heinrichreimer.gradle.plugin.github.release
 import com.heinrichreimer.gradle.plugin.github.release.api.GitHubApiService
 import com.heinrichreimer.gradle.plugin.github.release.configuration.GithubReleaseConfiguration
 import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangeLogSupplierConfiguration
-import kotlinx.coroutines.runBlocking
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.logging.Logger
@@ -68,21 +67,10 @@ class ChangeLogSupplier(
 
     private val service = GitHubApiService(authorizationProvider)
 
-    init {
-        gitExecutable = "git"
-        currentCommit = "HEAD"
-        lastCommit {
-            runBlocking {
-                getLastReleaseCommit()
-            }
-        }
-        gitOptions = listOf("--format=oneline", "--abbrev-commit", "--max-count=50")
-    }
-
     /**
      * Looks for the previous release's target commit.
      */
-    private suspend fun getLastReleaseCommit(): String {
+    internal suspend fun getLastReleaseCommit(): String {
         val owner = owner
         val repo = repository
 

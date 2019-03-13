@@ -31,6 +31,7 @@ package com.heinrichreimer.gradle.plugin.github.release
 
 import com.heinrichreimer.gradle.plugin.github.release.configuration.UpdateMode
 import com.heinrichreimer.gradle.plugin.github.release.configuration.copyFrom
+import kotlinx.coroutines.runBlocking
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -64,7 +65,7 @@ class GithubReleasePlugin : Plugin<Project> {
     }
 
     private fun GithubReleaseExtension.setDefaults(project: Project) {
-        log.debug("Assigning default values for ${GithubReleasePlugin::class.java.simpleName}.")
+        log.debug("Assigning default values for $EXTENSION_NAME extension.")
         owner {
             project.group
                     .toString()
@@ -85,6 +86,20 @@ class GithubReleasePlugin : Plugin<Project> {
         }
         bodyProvider = changelog
         updateMode = UpdateMode.NONE
+
+        changeLogSupplier.setDefaults(project)
+    }
+
+    private fun ChangeLogSupplier.setDefaults(project: Project) {
+        log.debug("Assigning default values for changelog supplier.")
+        gitExecutable = "git"
+        currentCommit = "HEAD"
+        lastCommit {
+            runBlocking {
+                getLastReleaseCommit()
+            }
+        }
+        gitOptions = listOf("--format=oneline", "--abbrev-commit", "--max-count=50")
     }
 
     private fun Project.registerTask(extension: GithubReleaseExtension) {

@@ -210,7 +210,7 @@ class GithubReleaseExtension(
         updateModeProvider = providers.provider { updateMode() }
     }
 
-    private val changeLogSupplier = ChangeLogSupplier(this, objects, layout, providers)
+    internal val changeLogSupplier = ChangeLogSupplier(this, objects, layout, providers)
 
     val changelog: Provider<String>
         get() = providers.provider {

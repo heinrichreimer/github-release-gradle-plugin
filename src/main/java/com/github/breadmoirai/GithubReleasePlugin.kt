@@ -49,6 +49,7 @@ class GithubReleasePlugin : Plugin<Project> {
     override fun apply(project: Project) {
         this.project = project
 
+        log.debug("Creating $EXTENSION_NAME extension for ${GithubReleasePlugin::class.java.simpleName}.")
         val githubReleaseExtension = project.extensions
                 .create(
                         EXTENSION_NAME,
@@ -58,6 +59,30 @@ class GithubReleasePlugin : Plugin<Project> {
                         project.providers
                 )
 
+        log.debug("Assigning default values for ${GithubReleasePlugin::class.java.simpleName}.")
+        githubReleaseExtension.owner {
+            val group = project.group.toString()
+            group.substring(group.lastIndexOf('.') + 1)
+        }
+
+        githubReleaseExtension.repo {
+            project.name ?: project.rootProject.name ?: project.rootProject.rootProject.name
+        }
+        githubReleaseExtension.tagName {
+            "v${project.version}"
+        }
+        githubReleaseExtension.targetCommitish = "master"
+        githubReleaseExtension.releaseNameProvider = githubReleaseExtension.tagNameProvider
+        githubReleaseExtension.draft = false
+        githubReleaseExtension.prerelease = false
+        githubReleaseExtension.authorization {
+            throw IllegalArgumentException("Must specify GitHub authorization token.")
+        }
+        githubReleaseExtension.bodyProvider = githubReleaseExtension.changelog
+        githubReleaseExtension.overwrite = false
+        githubReleaseExtension.allowUploadToExisting = false
+
+        log.debug("Registering $TASK_NAME task for ${GithubReleasePlugin::class.java.simpleName}.")
         project.tasks
                 .register(
                         TASK_NAME,
@@ -74,46 +99,11 @@ class GithubReleasePlugin : Plugin<Project> {
             val self = project.plugins.findPlugin(GithubReleasePlugin::class.java)
 
             if (self != null) {
-                log.debug("Assigning default values for ${GithubReleasePlugin::class.java.simpleName}")
                 val extension: GithubReleaseExtension = project
                         .extensions
                         .getByType(GithubReleaseExtension::class.java)
-//                extension.owner.setOrElse(Callable<String> {
-//                    val group = project.group.toString()
-//                    group.substring(group.lastIndexOf('.') + 1)
-//                })
-//                extension.repo.setOrElse(Callable<String> {
-//                    project.name ?: project.rootProject.name ?: project.rootProject.rootProject.name
-//                })
-//                extension.tagName.setOrElse(Callable<String> {
-//                    "v${project.version}"
-//                })
-//                extension.targetCommitish.setOrElse(Callable<String> {
-//                    "master"
-//                })
-//                extension.releaseName.setOrElse(Callable {
-//                    extension.tagName.get()
-//                })
-//                extension.draft.setOrElse(Callable { false })
-//                extension.prerelease.setOrElse(Callable { false })
-//                extension.authorization.setOrElse(Callable<String> {
-//                    //new GithubLoginApp().awaitResult().map{result -> "Basic $result"}.get()
-//                    null
-//                })
-//                extension.body.setOrElse(Callable<String> {
-//                    ChangeLogSupplier(extension, project).call()
-//                })
-//                extension.overwrite.setOrElse(Callable { false })
-//                extension.allowUploadToExisting.setOrElse(Callable { false })
             }
 
         }
     }
-
-//    private fun <T> Property<T>.setOrElse(value: Callable<T>) {
-//        if (!isPresent) {
-//            set(project.provider(value))
-//        }
-//    }
-
 }

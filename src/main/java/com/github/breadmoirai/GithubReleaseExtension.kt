@@ -103,6 +103,7 @@ import org.gradle.api.tasks.Internal
  * </p>
  *
  */
+@Suppress("UnstableApiUsage")
 class GithubReleaseExtension(
         private val objects: ObjectFactory,
         private val layout: ProjectLayout,

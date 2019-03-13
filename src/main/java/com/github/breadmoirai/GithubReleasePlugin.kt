@@ -73,28 +73,17 @@ class GithubReleasePlugin : Plugin<Project> {
                 .configure {
                     it.copyFrom(githubReleaseExtension)
                 }
-
-        project.afterEvaluate {
-            val self = project.plugins.findPlugin(GithubReleasePlugin::class.java)
-
-            if (self != null) {
-                val extension: GithubReleaseExtension = project
-                        .extensions
-                        .getByType(GithubReleaseExtension::class.java)
-            }
-
-        }
     }
 
     private fun GithubReleaseExtension.setDefaults(project: Project) {
         log.debug("Assigning default values for ${GithubReleasePlugin::class.java.simpleName}.")
         owner {
-            val group = project.group.toString()
-            group.substring(group.lastIndexOf('.') + 1)
+            project.group
+                    .toString()
+                    .substringAfterLast('.')
         }
-
         repo {
-            project.name ?: project.rootProject.name ?: project.rootProject.rootProject.name
+            project.name
         }
         tagName {
             "v${project.version}"

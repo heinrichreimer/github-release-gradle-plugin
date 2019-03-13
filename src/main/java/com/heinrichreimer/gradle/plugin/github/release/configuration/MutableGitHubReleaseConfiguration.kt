@@ -27,7 +27,7 @@ package com.heinrichreimer.gradle.plugin.github.release.configuration
 import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider
 
-interface MutableGithubReleaseConfiguration : GithubReleaseConfiguration {
+interface MutableGitHubReleaseConfiguration : GitHubReleaseConfiguration {
 
     override var ownerProvider: Provider<String>
     override var owner: String
@@ -109,18 +109,18 @@ interface MutableGithubReleaseConfiguration : GithubReleaseConfiguration {
 
     fun target(target: () -> String)
 
-    override var nameProvider: Provider<String>
-    override var name: String
+    override var titleProvider: Provider<String>
+    override var title: String
 
-    fun name(name: String) {
-        this.name = name
+    fun title(title: String) {
+        this.title = title
     }
 
-    fun name(name: Provider<String>) {
-        nameProvider = name
+    fun title(title: Provider<String>) {
+        titleProvider = title
     }
 
-    fun name(name: () -> String)
+    fun title(title: () -> String)
 
     override var bodyProvider: Provider<String>
     override var body: String

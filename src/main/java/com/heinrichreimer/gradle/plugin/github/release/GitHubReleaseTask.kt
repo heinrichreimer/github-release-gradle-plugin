@@ -21,22 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+/*
+ * Based on github-release-gradle-plugin by Ton Ly (@BreadMoirai)
+ * Licensed under the Apache License v2.0:
+ * https://github.com/BreadMoirai/github-release-gradle-plugin
+ */
 
-package com.heinrichreimer.gradle.plugin.github.release.configuration
+package com.heinrichreimer.gradle.plugin.github.release
 
-fun GithubReleaseConfiguration.copyTo(configuration: MutableGithubReleaseConfiguration) {
-    configuration.ownerProvider = ownerProvider
-    configuration.repositoryProvider = repositoryProvider
-    configuration.authorizationProvider = authorizationProvider
-    configuration.tagProvider = tagProvider
-    configuration.targetProvider = targetProvider
-    configuration.nameProvider = nameProvider
-    configuration.bodyProvider = bodyProvider
-    configuration.isDraftProvider = isDraftProvider
-    configuration.isPreReleaseProvider = isPreReleaseProvider
-    configuration.releaseAssets = releaseAssets
-    configuration.updateModeProvider = updateModeProvider
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableGitHubReleaseConfiguration
+import kotlinx.coroutines.runBlocking
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.ProjectLayout
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ProviderFactory
+import org.gradle.api.tasks.TaskAction
+import javax.inject.Inject
+
+@Suppress("UnstableApiUsage")
+class GitHubReleaseTask @Inject constructor(
+        objects: ObjectFactory,
+        layout: ProjectLayout,
+        providers: ProviderFactory
+) : DefaultTask(), MutableGitHubReleaseConfiguration by GitHubReleaseExtension(objects, layout, providers) {
+
+    init {
+        group = "publishing"
+    }
+
+    @TaskAction
+    fun publishRelease() = runBlocking {
+        GitHubRelease(this@GitHubReleaseTask).run()
+    }
 }
-
-fun MutableGithubReleaseConfiguration.copyFrom(configuration: GithubReleaseConfiguration) =
-        configuration.copyTo(this)

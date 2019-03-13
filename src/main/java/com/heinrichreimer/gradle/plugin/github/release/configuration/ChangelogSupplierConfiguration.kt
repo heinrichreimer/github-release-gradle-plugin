@@ -27,7 +27,7 @@ package com.heinrichreimer.gradle.plugin.github.release.configuration
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 
-interface ChangeLogSupplierConfiguration {
+interface ChangelogSupplierConfiguration {
 
     @get:Input
     val gitExecutableProvider: Provider<String>

@@ -32,7 +32,7 @@ package com.heinrichreimer.gradle.plugin.github.release
 import com.heinrichreimer.gradle.plugin.github.release.api.GitHubApiService
 import com.heinrichreimer.gradle.plugin.github.release.api.Release
 import com.heinrichreimer.gradle.plugin.github.release.api.ReleaseInput
-import com.heinrichreimer.gradle.plugin.github.release.configuration.GithubReleaseConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.GitHubReleaseConfiguration
 import com.heinrichreimer.gradle.plugin.github.release.configuration.UpdateMode
 import com.heinrichreimer.gradle.plugin.github.release.exception.IllegalNetworkResponseCodeException
 import com.heinrichreimer.gradle.plugin.github.release.exception.RepositoryNotFoundException
@@ -44,10 +44,10 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import retrofit2.Response
 
-class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseConfiguration by configuration {
+class GitHubRelease(configuration: GitHubReleaseConfiguration) : GitHubReleaseConfiguration by configuration {
 
     companion object {
-        private val log: Logger = Logging.getLogger(GithubRelease::class.java)
+        private val log: Logger = Logging.getLogger(GitHubRelease::class.java)
     }
 
     private val service = GitHubApiService(authorizationProvider)
@@ -110,7 +110,7 @@ class GithubRelease(configuration: GithubReleaseConfiguration) : GithubReleaseCo
         val release = ReleaseInput(
                 tag,
                 target,
-                name,
+                title,
                 body,
                 isDraft,
                 isPreRelease

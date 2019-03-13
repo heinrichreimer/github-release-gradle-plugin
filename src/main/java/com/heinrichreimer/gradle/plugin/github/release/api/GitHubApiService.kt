@@ -26,7 +26,7 @@ class GitHubApiService(
                                                 chain.request()
                                                         .newBuilder()
                                                         .addHeader("Authorization", "token ${authorization.get()}")
-                                                        .addHeader("User-Agent", "breadmoirai github-release-gradle-plugin")
+                                                        .addHeader("User-Agent", "GitHub Release Gradle Plugin")
                                                         .addHeader("Accept", "application/vnd.github.v3+json")
                                                         .addHeader("Content-Type", JSON.toString())
                                                         .build()

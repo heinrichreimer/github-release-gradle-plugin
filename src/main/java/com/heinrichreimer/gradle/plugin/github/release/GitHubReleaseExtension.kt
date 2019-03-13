@@ -29,8 +29,8 @@
 
 package com.heinrichreimer.gradle.plugin.github.release
 
-import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangeLogSupplierConfiguration
-import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableGithubReleaseConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangelogSupplierConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableGitHubReleaseConfiguration
 import com.heinrichreimer.gradle.plugin.github.release.configuration.UpdateMode
 import com.heinrichreimer.gradle.plugin.github.release.util.collectionDelegate
 import com.heinrichreimer.gradle.plugin.github.release.util.property
@@ -49,7 +49,7 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Internal
 
 /**
- * An extension for the [GithubReleasePlugin]
+ * An extension for the [GitHubReleasePlugin]
  * <p> See Default Values below </p>
  * <p>
  *     <table>
@@ -76,7 +76,7 @@ import org.gradle.api.tasks.Internal
  *             <td>'master'</td>
  *         </tr>
  *         <tr>
- *             <td>name</td>
+ *             <td>title</td>
  *             <td>'v' + project.version</td>
  *         </tr>
  *         <tr>
@@ -108,11 +108,11 @@ import org.gradle.api.tasks.Internal
  *
  */
 @Suppress("UnstableApiUsage")
-class GithubReleaseExtension(
+class GitHubReleaseExtension(
         objects: ObjectFactory,
         layout: ProjectLayout,
         private val providers: ProviderFactory
-) : MutableGithubReleaseConfiguration {
+) : MutableGitHubReleaseConfiguration {
 
     constructor(project: Project) : this(
             project.objects,
@@ -162,10 +162,10 @@ class GithubReleaseExtension(
 
     @get:Internal
     internal val releaseNameProperty: Property<String> = objects.property()
-    override var nameProvider by releaseNameProperty.providerDelegate
-    override var name by releaseNameProperty.valueDelegate
-    override fun name(name: () -> String) {
-        nameProvider = providers.provider { name() }
+    override var titleProvider by releaseNameProperty.providerDelegate
+    override var title by releaseNameProperty.valueDelegate
+    override fun title(title: () -> String) {
+        titleProvider = providers.provider { title() }
     }
 
     @get:Internal
@@ -210,7 +210,7 @@ class GithubReleaseExtension(
         updateModeProvider = providers.provider { updateMode() }
     }
 
-    internal val changeLogSupplier = ChangeLogSupplier(this, objects, layout, providers)
+    internal val changeLogSupplier = ChangelogSupplier(this, objects, layout, providers)
 
     val changelog: Provider<String>
         get() = providers.provider {
@@ -218,8 +218,8 @@ class GithubReleaseExtension(
         }
 
     fun changelog(
-            @DelegatesTo(MutableChangeLogSupplierConfiguration::class)
-            closure: Closure<MutableChangeLogSupplierConfiguration>
+            @DelegatesTo(MutableChangelogSupplierConfiguration::class)
+            closure: Closure<MutableChangelogSupplierConfiguration>
     ): Provider<String> {
         return providers.provider {
             changeLogSupplier
@@ -228,7 +228,7 @@ class GithubReleaseExtension(
         }
     }
 
-    fun changelog(action: Action<MutableChangeLogSupplierConfiguration>): Provider<String> {
+    fun changelog(action: Action<MutableChangelogSupplierConfiguration>): Provider<String> {
         return providers.provider {
             changeLogSupplier
                     .also(action::execute)
@@ -236,7 +236,7 @@ class GithubReleaseExtension(
         }
     }
 
-    fun changelog(block: (MutableChangeLogSupplierConfiguration) -> Unit): Provider<String> {
+    fun changelog(block: (MutableChangelogSupplierConfiguration) -> Unit): Provider<String> {
         return providers.provider {
             changeLogSupplier
                     .also(block)

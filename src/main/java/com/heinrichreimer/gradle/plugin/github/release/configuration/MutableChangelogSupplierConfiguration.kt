@@ -26,7 +26,7 @@ package com.heinrichreimer.gradle.plugin.github.release.configuration
 
 import org.gradle.api.provider.Provider
 
-interface MutableChangeLogSupplierConfiguration : ChangeLogSupplierConfiguration {
+interface MutableChangelogSupplierConfiguration : ChangelogSupplierConfiguration {
 
     override var gitExecutableProvider: Provider<String>
     override var gitExecutable: String

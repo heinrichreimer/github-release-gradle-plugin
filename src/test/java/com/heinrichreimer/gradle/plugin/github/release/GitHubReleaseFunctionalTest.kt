@@ -72,7 +72,7 @@ object GitHubReleaseFunctionalTest : Spek({
                     group = 'com.heinrichreimer'
                     version = 'test'
 
-                    githubRelease {
+                    gitHubRelease {
                         repository 'gradle-github-release'
                         body changelog {}
                     }
@@ -82,7 +82,7 @@ object GitHubReleaseFunctionalTest : Spek({
 
             result = GradleRunner.create()
                     .withProjectDir(File("C:\\Users\\TonTL\\Desktop\\Git\\BreadBotFramework"))
-                    .withArguments("githubRelease", "--info", "--stacktrace")
+                    .withArguments("gitHubRelease", "--info", "--stacktrace")
                     .withPluginClasspath(pluginClasspath)
                     .build()
         }
@@ -100,7 +100,7 @@ object GitHubReleaseFunctionalTest : Spek({
 
     describe("manual login test") {
         //        when:
-//        //new GithubLoginApp().awaitResult()
+//        //new GitHubLoginApp().awaitResult()
 //
 //                /*
 //                GridPane grid = new GridPane();
@@ -109,7 +109,7 @@ object GitHubReleaseFunctionalTest : Spek({
 //        grid.setVgap(10);
 //        grid.setPadding(new Insets(25, 25, 25, 25));
 //
-//        Text scenetitle = new Text("Login to Github");
+//        Text scenetitle = new Text("Login to GitHub");
 //        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 //        grid.add(scenetitle, 0, 0, 1, 1);
 //

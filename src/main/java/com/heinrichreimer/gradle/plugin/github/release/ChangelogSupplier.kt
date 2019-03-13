@@ -30,8 +30,8 @@
 package com.heinrichreimer.gradle.plugin.github.release
 
 import com.heinrichreimer.gradle.plugin.github.release.api.GitHubApiService
-import com.heinrichreimer.gradle.plugin.github.release.configuration.GithubReleaseConfiguration
-import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangeLogSupplierConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.GitHubReleaseConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangelogSupplierConfiguration
 import org.gradle.api.Project
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.logging.Logger
@@ -42,17 +42,17 @@ import org.zeroturnaround.exec.ProcessExecutor
 import java.io.IOException
 
 @Suppress("UnstableApiUsage")
-class ChangeLogSupplier(
-        configuration: GithubReleaseConfiguration,
+class ChangelogSupplier(
+        configuration: GitHubReleaseConfiguration,
         private val objects: ObjectFactory,
         private val layout: ProjectLayout,
         private val providers: ProviderFactory
 ) :
-        MutableChangeLogSupplierConfiguration by ChangeLogSupplierExtension(objects, providers),
-        GithubReleaseConfiguration by configuration {
+        MutableChangelogSupplierConfiguration by ChangelogSupplierExtension(objects, providers),
+        GitHubReleaseConfiguration by configuration {
 
     constructor(
-            configuration: GithubReleaseConfiguration,
+            configuration: GitHubReleaseConfiguration,
             project: Project
     ) : this(
             configuration = configuration,
@@ -62,7 +62,7 @@ class ChangeLogSupplier(
     )
 
     companion object {
-        private val log: Logger = Logging.getLogger(ChangeLogSupplier::class.java)
+        private val log: Logger = Logging.getLogger(ChangelogSupplier::class.java)
     }
 
     private val service = GitHubApiService(authorizationProvider)
@@ -75,7 +75,7 @@ class ChangeLogSupplier(
         val repo = repository
 
 
-        // query the github api for releases
+        // Query the GitHub API for releases.
         val response = service
                 .getReleasesAsync(owner, repo)
                 .await()

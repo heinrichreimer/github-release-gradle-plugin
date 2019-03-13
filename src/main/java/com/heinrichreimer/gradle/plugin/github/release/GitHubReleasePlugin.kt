@@ -38,33 +38,33 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 @Suppress("UnstableApiUsage")
-class GithubReleasePlugin : Plugin<Project> {
+class GitHubReleasePlugin : Plugin<Project> {
 
     companion object {
-        private const val EXTENSION_NAME = "githubRelease"
-        private const val TASK_NAME = "githubRelease"
-        private val log: Logger = Logging.getLogger(GithubReleasePlugin::class.java)
+        private const val EXTENSION_NAME = "gitHubRelease"
+        private const val TASK_NAME = "gitHubRelease"
+        private val log: Logger = Logging.getLogger(GitHubReleasePlugin::class.java)
     }
 
     override fun apply(project: Project) {
-        val githubReleaseExtension = project.createExtension()
-        githubReleaseExtension.setDefaults(project)
-        project.registerTask(githubReleaseExtension)
+        val gitHubReleaseExtension = project.createExtension()
+        gitHubReleaseExtension.setDefaults(project)
+        project.registerTask(gitHubReleaseExtension)
     }
 
-    private fun Project.createExtension(): GithubReleaseExtension {
-        log.debug("Creating $EXTENSION_NAME extension for ${GithubReleasePlugin::class.java.simpleName}.")
+    private fun Project.createExtension(): GitHubReleaseExtension {
+        log.debug("Creating $EXTENSION_NAME extension for ${GitHubReleasePlugin::class.java.simpleName}.")
         return extensions
                 .create(
                         EXTENSION_NAME,
-                        GithubReleaseExtension::class.java,
+                        GitHubReleaseExtension::class.java,
                         objects,
                         layout,
                         providers
                 )
     }
 
-    private fun GithubReleaseExtension.setDefaults(project: Project) {
+    private fun GitHubReleaseExtension.setDefaults(project: Project) {
         log.debug("Assigning default values for $EXTENSION_NAME extension.")
         owner {
             project.group
@@ -78,7 +78,7 @@ class GithubReleasePlugin : Plugin<Project> {
             "v${project.version}"
         }
         target = "master"
-        nameProvider = tagProvider
+        titleProvider = tagProvider
         isDraft = false
         isPreRelease = false
         authorization {
@@ -90,7 +90,7 @@ class GithubReleasePlugin : Plugin<Project> {
         changeLogSupplier.setDefaults(project)
     }
 
-    private fun ChangeLogSupplier.setDefaults(project: Project) {
+    private fun ChangelogSupplier.setDefaults(project: Project) {
         log.debug("Assigning default values for changelog supplier.")
         gitExecutable = "git"
         currentCommit = "HEAD"
@@ -102,12 +102,12 @@ class GithubReleasePlugin : Plugin<Project> {
         gitOptions = listOf("--format=oneline", "--abbrev-commit", "--max-count=50")
     }
 
-    private fun Project.registerTask(extension: GithubReleaseExtension) {
-        log.debug("Registering $TASK_NAME task for ${GithubReleasePlugin::class.java.simpleName}.")
+    private fun Project.registerTask(extension: GitHubReleaseExtension) {
+        log.debug("Registering $TASK_NAME task for ${GitHubReleasePlugin::class.java.simpleName}.")
         tasks
                 .register(
                         TASK_NAME,
-                        GithubReleaseTask::class.java,
+                        GitHubReleaseTask::class.java,
                         objects,
                         layout,
                         providers

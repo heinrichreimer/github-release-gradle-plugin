@@ -24,7 +24,7 @@
 
 package com.heinrichreimer.gradle.plugin.github.release
 
-import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangeLogSupplierConfiguration
+import com.heinrichreimer.gradle.plugin.github.release.configuration.MutableChangelogSupplierConfiguration
 import com.heinrichreimer.gradle.plugin.github.release.util.property
 import com.heinrichreimer.gradle.plugin.github.release.util.providerDelegate
 import com.heinrichreimer.gradle.plugin.github.release.util.valueDelegate
@@ -35,10 +35,10 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.Internal
 
 @Suppress("UnstableApiUsage")
-class ChangeLogSupplierExtension(
+class ChangelogSupplierExtension(
         objects: ObjectFactory,
         private val providers: ProviderFactory
-) : MutableChangeLogSupplierConfiguration {
+) : MutableChangelogSupplierConfiguration {
 
     constructor(project: Project) : this(
             project.objects,

@@ -36,8 +36,8 @@ import org.zeroturnaround.exec.ProcessExecutor
 object GitHubReleaseUnitTest : Spek({
 
     group("Test 1") {
-        val changeLogSupplier: ChangeLogSupplier by memoized {
-            (TODO() as ChangeLogSupplier).apply {
+        val changeLogSupplier: ChangelogSupplier by memoized {
+            (TODO() as ChangelogSupplier).apply {
                 lastCommit {
 
                     val lastTag = "test"
@@ -67,17 +67,17 @@ object GitHubReleaseUnitTest : Spek({
 
     group("delete release") {
         //        given: "A release with a tag"
-//        val app = new GithubRelease("BreadMoirai", "github-release-gradle-plugin")
+//        val app = new GitHubRelease("BreadMoirai", "github-release-gradle-plugin")
 //
 //        when:
 //        def result = GradleRunner.create()
 //                .withProjectDir(testProjectDir.root)
-//                .withArguments('githubRelease')
+//                .withArguments('gitHubRelease')
 //                .withPluginClasspath(pluginClasspath)
 //                .build()
 //
 //        then:
-//        result.task(":githubRelease").outcome == SUCCESS
+//        result.task(":gitHubRelease").outcome == SUCCESS
 //        println "result.output = $result.output"
 //
     }

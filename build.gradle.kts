@@ -86,19 +86,19 @@ pluginBundle {
     website = "https://github.com/heinrichreimer/gradle-github-release"
     vcsUrl = "https://github.com/heinrichreimer/gradle-github-release"
     tags = setOf(
-            "github",
-            "release",
-            "continuous integration"
-    )
+            "GitHub",
+            "Release",
+            "Continuous Integration"
+    ).map(String::toLowerCase)
 }
 
 gradlePlugin {
     @Suppress("UnstableApiUsage")
-    plugins.create("githubRelease") {
+    plugins.create("gitHubRelease") {
         id = "com.heinrichreimer.github-release"
-        displayName = "Gradle Github Release Plugin"
+        displayName = "Gradle GitHub Release Plugin"
         description = "A Gradle Plugin to post releases to GitHub."
-        implementationClass = "com.heinrichreimer.gradle.plugin.github.release.GithubReleasePlugin"
+        implementationClass = "com.heinrichreimer.gradle.plugin.github.release.GitHubReleasePlugin"
     }
 }
 

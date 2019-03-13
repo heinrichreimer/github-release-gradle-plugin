@@ -29,7 +29,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 
-interface GithubReleaseConfiguration {
+interface GitHubReleaseConfiguration {
 
     @get:Input
     val ownerProvider: Provider<String>
@@ -69,10 +69,10 @@ interface GithubReleaseConfiguration {
         get() = targetProvider.get()
 
     @get:Input
-    val nameProvider: Provider<String>
+    val titleProvider: Provider<String>
     @get:Input
-    val name: String
-        get() = nameProvider.get()
+    val title: String
+        get() = titleProvider.get()
 
     @get:Input
     val bodyProvider: Provider<String>
